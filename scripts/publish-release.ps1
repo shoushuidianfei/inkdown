@@ -1,26 +1,22 @@
-# InkDown 手动发布脚本
-# 用法: .\scripts\publish-release.ps1 -Tag "v0.1.0"
-# 需要环境变量 GITHUB_TOKEN（或在运行时输入）
+﻿# InkDown 手动发布脚本
+# 用法: .\scripts\publish-release.ps1 -Token "ghp_xxxxxxxx"
+# 或设置环境变量: $env:GITHUB_TOKEN = "ghp_xxxxxxxx"
 
 param(
     [string]$Tag = "v0.1.0",
     [string]$Name = "InkDown v0.1.0",
-    [string]$Body = "InkDown 初始版本发布。\n\n## 安装方式\n- `.msi`：Windows 标准安装包（推荐）\n- `-setup.exe`：便携安装程序\n\n## 功能特性\n- 黄蓝极简风格 UI\n- 双链笔记 + 知识图谱\n- AI 辅助写作（支持 OpenAI / 通义千问 / 文心一言 / DeepSeek / 小米 MiMo）\n- WebDAV 同步\n- 本地 SQLite 全文搜索",
+    [string]$Body = "InkDown 初始版本发布。`n`n## 安装方式`n- .msi：Windows 标准安装包（推荐）`n- -setup.exe：便携安装程序`n`n## 功能特性`n- 黄蓝极简风格 UI`n- 双链笔记 + 知识图谱`n- AI 辅助写作（支持 OpenAI / 通义千问 / 文心一言 / DeepSeek / 小米 MiMo）`n- WebDAV 同步`n- 本地 SQLite 全文搜索",
     [bool]$Draft = $false,
-    [bool]$Prerelease = $false
+    [bool]$Prerelease = $false,
+    [string]$Token = ""
 )
 
 $ErrorActionPreference = "Stop"
 
 # 获取 GitHub Token
-$token = $env:GITHUB_TOKEN
-if (-not $token) {
-    $secureToken = Read-Host -Prompt "请输入 GitHub Personal Access Token" -AsSecureString
-    $token = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureToken))
-}
-
-if (-not $token) {
-    Write-Error "必须提供 GitHub Token。可通过 https://github.com/settings/tokens 创建（勾选 repo 权限）"
+if (-not $Token) { $Token = $env:GITHUB_TOKEN }
+if (-not $Token) {
+    Write-Error "缺少 GitHub Token。请通过以下方式之一提供：`n  1. 设置环境变量: `$env:GITHUB_TOKEN = 'ghp_xxx'`n  2. 传入参数: .\scripts\publish-release.ps1 -Token 'ghp_xxx'`n`nToken 可在 https://github.com/settings/tokens 创建（勾选 'repo' 权限）"
     exit 1
 }
 
@@ -40,7 +36,7 @@ $releasePayload = @{
 
 $headers = @{
     Accept = "application/vnd.github+json"
-    Authorization = "Bearer $token"
+    Authorization = "Bearer $Token"
     "X-GitHub-Api-Version" = "2022-11-28"
 }
 
@@ -100,4 +96,4 @@ foreach ($relPath in $assets) {
 }
 
 Write-Host "`n全部完成！Release 页面: $($release.html_url)" -ForegroundColor Green
-Write-Host "如果没有自动发布（Draft=true），请前往 GitHub 手动发布。" -ForegroundColor Yellow
+if ($Draft) { Write-Host "注意：当前为 Draft 状态，请前往 GitHub 手动发布。" -ForegroundColor Yellow }

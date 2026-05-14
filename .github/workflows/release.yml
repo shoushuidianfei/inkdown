@@ -13,13 +13,13 @@ jobs:
       matrix:
         include:
           - platform: windows-latest
-            args: ''
+            args: '--target x86_64-pc-windows-msvc'
           - platform: macos-latest
             args: '--target aarch64-apple-darwin'
           - platform: macos-latest
             args: '--target x86_64-apple-darwin'
           - platform: ubuntu-latest
-            args: ''
+            args: '--target x86_64-unknown-linux-gnu'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -31,7 +31,7 @@ jobs:
           node-version: lts/*
 
       - name: install Rust stable
-        uses: dtolnay/rust-action@stable
+        uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 

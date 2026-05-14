@@ -41,7 +41,6 @@ export function AIToolbar({ selectedText, onAccept, onReject, position }: AITool
     setIsProcessing(true);
     setCurrentAction(action);
     setResult(null);
-
     try {
       const response = await processText(selectedText, action);
       setResult(response);
@@ -53,132 +52,114 @@ export function AIToolbar({ selectedText, onAccept, onReject, position }: AITool
     }
   };
 
-  const handleAccept = () => {
-    if (result) {
-      onAccept(result);
-    }
-  };
+  const handleAccept = () => { if (result) onAccept(result); };
+  const handleRegenerate = () => { if (currentAction) handleAction(currentAction); };
 
-  const handleRegenerate = () => {
-    if (currentAction) {
-      handleAction(currentAction);
-    }
-  };
-
-  // 如果有结果显示，显示预览
+  // 预览结果
   if (result) {
     return (
       <div
-        className="fixed z-50 w-80 rounded-md"
         style={{
-          left: position.x,
-          top: position.y,
-          backgroundColor: "var(--bg-primary)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+          position: "fixed", zIndex: 50, width: 320,
+          left: position.x, top: position.y,
+          borderRadius: "var(--radius-md)",
+          backgroundColor: "var(--bg-elevated)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          border: "var(--border-subtle)",
         }}
       >
         {/* 原文 */}
-        <div className="px-3 py-2" style={{ borderBottom: "1px solid var(--border)" }}>
-          <div className="text-[11px] mb-1" style={{ color: "var(--text-muted)" }}>
-            原文
-          </div>
-          <div
-            className="text-xs px-2 py-1.5 rounded-sm"
-            style={{
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-secondary)",
-            }}
-          >
+        <div style={{ padding: "8px 12px", borderBottom: "var(--border-subtle)" }}>
+          <div style={{ fontSize: 11, marginBottom: 4, color: "var(--text-tertiary)" }}>原文</div>
+          <div style={{ fontSize: "var(--text-xs)", padding: "4px 8px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-hover)", color: "var(--text-secondary)" }}>
             {selectedText.length > 150 ? selectedText.substring(0, 150) + "..." : selectedText}
           </div>
         </div>
 
         {/* AI 建议 */}
-        <div className="px-3 py-2" style={{ borderBottom: "1px solid var(--border)" }}>
-          <div className="text-[11px] mb-1" style={{ color: "var(--text-muted)" }}>
-            AI 建议
-          </div>
-          <div
-            className="text-xs px-2 py-1.5 rounded-sm"
-            style={{
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-            }}
-          >
+        <div style={{ padding: "8px 12px", borderBottom: "var(--border-subtle)" }}>
+          <div style={{ fontSize: 11, marginBottom: 4, color: "var(--text-tertiary)" }}>AI 建议</div>
+          <div style={{ fontSize: "var(--text-xs)", padding: "4px 8px", borderRadius: "var(--radius-sm)", backgroundColor: "var(--bg-hover)", color: "var(--text-primary)" }}>
             {result}
           </div>
         </div>
 
-        {/* 操作按钮 */}
-        <div className="px-3 py-2 flex items-center gap-2">
+        {/* 操作按钮: 12px/400 */}
+        <div style={{ padding: "8px 12px", display: "flex", alignItems: "center", gap: 8 }}>
           <button
             onClick={handleAccept}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium"
             style={{
-              backgroundColor: "var(--accent)",
-              color: "var(--bg-primary)",
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "0 10px", height: 28, borderRadius: "var(--radius-sm)",
+              fontSize: "var(--text-xs)", fontWeight: "var(--font-medium)",
+              backgroundColor: "var(--accent)", color: "#ffffff",
             }}
           >
-            <Check size={12} />
-            接受
+            <Check size={12} /> 接受
           </button>
           <button
             onClick={onReject}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs"
             style={{
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "0 10px", height: 28, borderRadius: "var(--radius-sm)",
+              fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
               color: "var(--text-secondary)",
             }}
           >
-            <X size={12} />
-            拒绝
+            <X size={12} /> 拒绝
           </button>
           <button
             onClick={handleRegenerate}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs"
             style={{
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "0 10px", height: 28, borderRadius: "var(--radius-sm)",
+              fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
               color: "var(--text-secondary)",
             }}
           >
-            <RefreshCw size={12} />
-            重试
+            <RefreshCw size={12} /> 重试
           </button>
         </div>
       </div>
     );
   }
 
-  // 显示操作菜单
+  // 操作菜单: bg --gray-700, --radius-md, shadow
   return (
     <div
-      className="fixed z-50 rounded-md py-0.5"
       style={{
-        left: position.x,
-        top: position.y,
-        backgroundColor: "var(--bg-primary)",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        position: "fixed", zIndex: 50,
+        left: position.x, top: position.y,
+        borderRadius: "var(--radius-md)", padding: "4px 0",
+        backgroundColor: "var(--bg-elevated)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+        border: "var(--border-subtle)",
       }}
     >
       {isProcessing ? (
-        <div className="px-4 py-2 flex items-center gap-2">
-          <Loader2 size={13} className="animate-spin" style={{ color: "var(--accent)" }} />
-          <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
-            AI 处理中...
-          </span>
+        <div style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: 8 }}>
+          <Loader2 size={13} style={{ color: "var(--accent)", animation: "spin 1s linear infinite" }} />
+          <span style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)" }}>AI 处理中...</span>
         </div>
       ) : (
-        <div>
-          {AI_ACTIONS.map((action) => (
-            <button
-              key={action.id}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-[rgba(148,163,184,0.05)]"
-              style={{ color: "var(--text-primary)" }}
-              onClick={() => handleAction(action.id)}
-            >
-              <action.icon size={12} style={{ color: "var(--accent)" }} />
-              {action.label}
-            </button>
-          ))}
-        </div>
+        AI_ACTIONS.map((action) => (
+          <button
+            key={action.id}
+            style={{
+              width: "100%", display: "flex", alignItems: "center", gap: 8,
+              padding: "0 12px", height: 32,
+              fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+              color: "var(--text-primary)",
+              transition: "background-color var(--duration-fast) var(--ease-default)",
+            }}
+            onClick={() => handleAction(action.id)}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+          >
+            <action.icon size={12} style={{ color: "var(--accent)" }} />
+            {action.label}
+          </button>
+        ))
       )}
     </div>
   );

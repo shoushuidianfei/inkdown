@@ -22,29 +22,22 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
   const { config } = useAIStore();
   const { theme } = useTheme();
 
-  // 暴露 store 给 wikilink 扩展使用
   useEffect(() => {
     (window as any).__inkdown_store = useAppStore.getState();
-    return () => {
-      delete (window as any).__inkdown_store;
-    };
+    return () => { delete (window as any).__inkdown_store; };
   }, []);
 
-  // AI 工具栏状态
   const [showAIToolbar, setShowAIToolbar] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
   const [selectionRange, setSelectionRange] = useState<{ from: number; to: number } | null>(null);
 
-  // 保存文件的防抖函数
   const debouncedSave = useCallback(
     (() => {
       let timeout: ReturnType<typeof setTimeout>;
       return (tabId: string) => {
         clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          saveFile(tabId);
-        }, 1000);
+        timeout = setTimeout(() => saveFile(tabId), 1000);
       };
     })(),
     [saveFile]
@@ -53,42 +46,24 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
   useEffect(() => {
     if (!editorRef.current) return;
 
-    // 创建编辑器状态
     const state = EditorState.create({
       doc: tab.content,
       extensions: [
-        // 基础功能
         lineNumbers(),
         history(),
         highlightActiveLine(),
         placeholder("开始写作..."),
-
-        // Markdown 语言支持
         markdown({ base: markdownLanguage }),
-
-        // 语法高亮
         syntaxHighlighting(defaultHighlightStyle),
-
-        // 主题跟随切换
         theme === "dark" ? oneDark : [],
-
-        // Wikilink 装饰 + 自动补全 + 点击跳转
         wikilinkExtension(),
 
-        // 快捷键
         keymap.of([
           ...defaultKeymap,
           ...historyKeymap,
-          {
-            key: "Ctrl-s",
-            run: () => {
-              saveFile(tab.id);
-              return true;
-            },
-          },
+          { key: "Ctrl-s", run: () => { saveFile(tab.id); return true; } },
         ]),
 
-        // 内容变化监听
         CMEditorView.updateListener.of((update) => {
           if (update.docChanged) {
             const content = update.state.doc.toString();
@@ -96,13 +71,11 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
             debouncedSave(tab.id);
           }
 
-          // 检测选区变化
           if (update.selectionSet) {
             const { from, to } = update.state.selection.main;
             if (from !== to) {
               const text = update.state.doc.sliceString(from, to);
               if (text.trim().length > 0 && config) {
-                // 获取选区位置
                 const coords = view.coordsAtPos(to);
                 if (coords) {
                   setSelectedText(text);
@@ -120,7 +93,7 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
           }
         }),
 
-        // 编辑器样式
+        // 编辑器样式 — 使用新 Design Token
         CMEditorView.theme({
           "&": {
             height: "100%",
@@ -132,24 +105,24 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
             lineHeight: "1.8",
           },
           ".cm-line": {
-            padding: "0 0 0 0",
+            padding: "0",
           },
           ".cm-gutters": {
-            backgroundColor: "var(--bg-secondary)",
+            backgroundColor: "var(--bg-sidebar)",
             border: "none",
-            color: "var(--text-muted)",
+            color: "var(--text-tertiary)",
           },
           ".cm-activeLineGutter": {
-            backgroundColor: "var(--bg-tertiary)",
+            backgroundColor: "var(--bg-hover)",
           },
           ".cm-activeLine": {
-            backgroundColor: "var(--accent-dim)",
+            backgroundColor: "var(--accent-subtle)",
           },
           ".cm-selectionBackground": {
-            backgroundColor: "rgba(245, 166, 35, 0.2) !important",
+            backgroundColor: "var(--accent-muted) !important",
           },
           "&.cm-focused .cm-selectionBackground": {
-            backgroundColor: "rgba(245, 166, 35, 0.2) !important",
+            backgroundColor: "var(--accent-muted) !important",
           },
           ".cm-cursor": {
             borderLeftColor: "var(--accent)",
@@ -161,33 +134,20 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
       ],
     });
 
-    // 创建编辑器视图
-    const view = new CMEditorView({
-      state,
-      parent: editorRef.current,
-    });
-
+    const view = new CMEditorView({ state, parent: editorRef.current });
     viewRef.current = view;
 
-    // 暴露 scrollToLine 给 store
     setScrollToLine((line: number) => {
       const v = viewRef.current;
       if (!v) return;
       const lineNum = Math.min(line + 1, v.state.doc.lines);
       const pos = v.state.doc.line(lineNum).from;
-      v.dispatch({
-        selection: { anchor: pos },
-        scrollIntoView: true,
-      });
+      v.dispatch({ selection: { anchor: pos }, scrollIntoView: true });
     });
 
-    return () => {
-      view.destroy();
-      setScrollToLine(null);
-    };
-  }, [tab.id, theme]); // tab.id 或主题变化时重建编辑器
+    return () => { view.destroy(); setScrollToLine(null); };
+  }, [tab.id, theme]);
 
-  // 接受 AI 建议
   const handleAcceptAI = (newText: string) => {
     if (viewRef.current && selectionRange) {
       viewRef.current.dispatch({
@@ -198,17 +158,14 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
     setSelectionRange(null);
   };
 
-  // 拒绝 AI 建议
   const handleRejectAI = () => {
     setShowAIToolbar(false);
     setSelectionRange(null);
   };
 
   return (
-    <div className="relative h-full w-full" style={{ backgroundColor: "var(--bg-primary)" }}>
-      <div ref={editorRef} className="h-full w-full" />
-
-      {/* AI 工具栏 */}
+    <div style={{ position: "relative", height: "100%", width: "100%", backgroundColor: "var(--bg-main)" }}>
+      <div ref={editorRef} style={{ height: "100%", width: "100%" }} />
       {showAIToolbar && selectedText && (
         <AIToolbar
           selectedText={selectedText}

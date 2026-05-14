@@ -21,20 +21,13 @@ export function AIPanel() {
   const { activeTabId, openTabs } = useAppStore();
   const activeTab = openTabs.find((tab) => tab.id === activeTabId);
 
-  useEffect(() => {
-    loadConfig();
-  }, [loadConfig]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, currentResponse]);
+  useEffect(() => { loadConfig(); }, [loadConfig]);
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, currentResponse]);
 
   const handleSend = async () => {
     if (!input.trim() || isStreaming) return;
-
     const message = input.trim();
     setInput("");
-
     try {
       await sendMessage(message, activeTab?.content);
     } catch (error) {
@@ -44,37 +37,35 @@ export function AIPanel() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
   const renderMessage = (msg: ChatMessage) => {
     const isUser = msg.role === "user";
-
     return (
-      <div
-        key={msg.id}
-        className={`flex gap-2 mb-3 ${isUser ? "flex-row-reverse" : ""}`}
-      >
+      <div key={msg.id} style={{ display: "flex", gap: 8, marginBottom: 12, flexDirection: isUser ? "row-reverse" : "row" }}>
+        {/* 头像: 20px */}
         <div
-          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
           style={{
-            backgroundColor: isUser ? "var(--accent)" : "var(--bg-tertiary)",
-            color: isUser ? "var(--bg-primary)" : "var(--text-secondary)",
+            width: 20, height: 20, borderRadius: "var(--radius-full)",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+            backgroundColor: isUser ? "var(--accent)" : "var(--bg-hover)",
+            color: isUser ? "#ffffff" : "var(--text-secondary)",
           }}
         >
-          {isUser ? <User size={12} /> : <Bot size={12} />}
+          {isUser ? <User size={10} /> : <Bot size={10} />}
         </div>
+        {/* 消息气泡: 13px/400 */}
         <div
-          className="flex-1 px-3 py-2 rounded-md text-xs"
           style={{
-            backgroundColor: isUser ? "var(--accent)" : "var(--bg-tertiary)",
-            color: isUser ? "var(--bg-primary)" : "var(--text-primary)",
+            flex: 1, padding: "8px 12px", borderRadius: "var(--radius-md)",
+            fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
+            backgroundColor: isUser ? "var(--accent-muted)" : "transparent",
+            color: "var(--text-primary)",
+            whiteSpace: "pre-wrap",
           }}
         >
-          <div className="whitespace-pre-wrap">{msg.content}</div>
+          {msg.content}
         </div>
       </div>
     );
@@ -82,41 +73,38 @@ export function AIPanel() {
 
   if (!config) {
     return (
-      <div className="h-full flex flex-col items-center justify-center px-4">
-        <p className="text-xs text-center mb-2" style={{ color: "var(--text-secondary)" }}>
-          请先配置 AI 设置
-        </p>
-        <p className="text-[11px] text-center" style={{ color: "var(--text-muted)" }}>
-          设置 → AI 设置
-        </p>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 16 }}>
+        <p style={{ fontSize: "var(--text-xs)", textAlign: "center", color: "var(--text-secondary)", marginBottom: 8 }}>请先配置 AI 设置</p>
+        <p style={{ fontSize: 11, textAlign: "center", color: "var(--text-tertiary)" }}>设置 → AI 设置</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* 头部 */}
-      <div className="flex items-center justify-between px-3 py-1.5">
-        <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-          AI 助手
-        </span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 12px" }}>
+        <span style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>AI 助手</span>
         <button
-          className="p-0.5 rounded-sm hover:bg-[rgba(148,163,184,0.1)]"
-          style={{ color: "var(--text-muted)" }}
+          style={{
+            width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center",
+            borderRadius: "var(--radius-sm)", color: "var(--text-tertiary)",
+            transition: "background-color var(--duration-fast) var(--ease-default)",
+          }}
           onClick={clearMessages}
           title="清空对话"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
         >
           <Trash2 size={11} />
         </button>
       </div>
 
       {/* 消息列表 */}
-      <div className="flex-1 overflow-y-auto px-3 py-1">
+      <div style={{ flex: 1, overflowY: "auto", padding: "4px 12px" }}>
         {messages.length === 0 && !isStreaming && (
-          <div className="h-full flex flex-col items-center justify-center">
-            <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-              开始与 AI 对话
-            </p>
+          <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <p style={{ fontSize: "var(--text-xs)", textAlign: "center", color: "var(--text-tertiary)" }}>开始与 AI 对话</p>
           </div>
         )}
 
@@ -124,26 +112,24 @@ export function AIPanel() {
 
         {/* 流式响应 */}
         {isStreaming && (
-          <div className="flex gap-2 mb-3">
+          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                backgroundColor: "var(--bg-tertiary)",
-                color: "var(--text-secondary)",
+                width: 20, height: 20, borderRadius: "var(--radius-full)",
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                backgroundColor: "var(--bg-hover)", color: "var(--text-secondary)",
               }}
             >
-              <Bot size={12} />
+              <Bot size={10} />
             </div>
             <div
-              className="flex-1 px-3 py-2 rounded-md text-xs"
               style={{
-                backgroundColor: "var(--bg-tertiary)",
-                color: "var(--text-primary)",
+                flex: 1, padding: "8px 12px", borderRadius: "var(--radius-md)",
+                fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
+                backgroundColor: "transparent", color: "var(--text-primary)",
               }}
             >
-              {currentResponse || (
-                <Loader2 size={12} className="animate-spin" />
-              )}
+              {currentResponse || <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} />}
             </div>
           </div>
         )}
@@ -151,43 +137,38 @@ export function AIPanel() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 输入框 */}
-      <div className="px-3 py-2">
-        <div className="flex gap-1.5">
+      {/* 输入框: bg --gray-800, --border-subtle, --radius-lg, 40px min-height */}
+      <div style={{ padding: 8 }}>
+        <div style={{ display: "flex", gap: 6 }}>
           <textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="输入问题..."
-            className="flex-1 px-2.5 py-1.5 text-xs resize-none"
             style={{
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              minHeight: "32px",
-              maxHeight: "80px",
+              flex: 1, padding: "8px 10px", fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+              resize: "none", minHeight: 40, maxHeight: 80,
+              backgroundColor: "var(--gray-800)", color: "var(--text-primary)",
+              border: "var(--border-subtle)", borderRadius: "var(--radius-lg)",
             }}
             rows={1}
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isStreaming}
-            className="p-1.5 rounded-md transition-all"
             style={{
-              backgroundColor: input.trim() && !isStreaming ? "var(--accent)" : "var(--bg-tertiary)",
-              color: input.trim() && !isStreaming ? "var(--bg-primary)" : "var(--text-muted)",
+              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+              borderRadius: "var(--radius-md)", flexShrink: 0, alignSelf: "flex-end",
+              backgroundColor: input.trim() && !isStreaming ? "var(--accent)" : "var(--bg-hover)",
+              color: input.trim() && !isStreaming ? "#ffffff" : "var(--text-tertiary)",
+              transition: "all var(--duration-fast) var(--ease-default)",
             }}
           >
-            {isStreaming ? (
-              <Loader2 size={12} className="animate-spin" />
-            ) : (
-              <Send size={12} />
-            )}
+            {isStreaming ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Send size={12} />}
           </button>
         </div>
-        <p className="text-[10px] mt-1" style={{ color: "var(--text-muted)" }}>
-          {config.model}
-        </p>
+        <p style={{ fontSize: 10, marginTop: 4, color: "var(--text-tertiary)" }}>{config.model}</p>
       </div>
     </div>
   );

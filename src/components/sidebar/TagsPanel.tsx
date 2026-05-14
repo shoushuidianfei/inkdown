@@ -4,45 +4,39 @@ import { useAppStore } from "../../stores/useAppStore";
 export function TagsPanel() {
   const { allTags, loadAllTags, search } = useAppStore();
 
-  useEffect(() => {
-    loadAllTags();
-  }, [loadAllTags]);
+  useEffect(() => { loadAllTags(); }, [loadAllTags]);
 
-  const handleTagClick = (tagName: string) => {
-    search(`#${tagName}`);
-  };
+  const handleTagClick = (tagName: string) => { search(`#${tagName}`); };
 
   if (allTags.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center px-4">
-        <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-          暂无标签
-        </p>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 16 }}>
+        <p style={{ fontSize: "var(--text-xs)", textAlign: "center", color: "var(--text-tertiary)" }}>暂无标签</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-3 py-1.5">
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {allTags.length} 个标签
-        </p>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "6px 12px" }}>
+        <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>{allTags.length} 个标签</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div style={{ flex: 1, overflowY: "auto" }}>
         {allTags.map(([tag, count]) => (
           <div
             key={tag}
-            className="flex items-center justify-between px-3 py-1 cursor-pointer hover:bg-[rgba(148,163,184,0.05)]"
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "0 12px", height: 32, cursor: "pointer",
+              transition: "background-color var(--duration-fast) var(--ease-default)",
+            }}
             onClick={() => handleTagClick(tag)}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
           >
-            <span className="text-xs" style={{ color: "var(--text-primary)" }}>
-              #{tag}
-            </span>
-            <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-              {count}
-            </span>
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--text-primary)" }}>#{tag}</span>
+            <span style={{ fontSize: 11, color: "var(--text-tertiary)" }}>{count}</span>
           </div>
         ))}
       </div>

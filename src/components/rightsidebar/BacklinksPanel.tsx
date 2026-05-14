@@ -2,31 +2,24 @@ import { useAppStore, Backlink } from "../../stores/useAppStore";
 
 export function BacklinksPanel() {
   const { backlinks, activeTabId, openTabs, openFile } = useAppStore();
-
   const activeTab = openTabs.find((tab) => tab.id === activeTabId);
 
   if (!activeTab) {
     return (
-      <div className="h-full flex flex-col items-center justify-center px-4">
-        <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-          打开一个文件查看反向链接
-        </p>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 16 }}>
+        <p style={{ fontSize: "var(--text-xs)", textAlign: "center", color: "var(--text-tertiary)" }}>打开一个文件查看反向链接</p>
       </div>
     );
   }
 
   if (backlinks.length === 0) {
     return (
-      <div className="h-full flex flex-col">
-        <div className="px-3 py-1.5">
-          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-            反向链接 · {activeTab.name}
-          </p>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: "6px 12px" }}>
+          <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>反向链接 · {activeTab.name}</p>
         </div>
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-            暂无反向链接
-          </p>
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>暂无反向链接</p>
         </div>
       </div>
     );
@@ -38,24 +31,29 @@ export function BacklinksPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-3 py-1.5">
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "6px 12px" }}>
+        <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>
           反向链接 · {activeTab.name} ({backlinks.length})
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div style={{ flex: 1, overflowY: "auto" }}>
         {backlinks.map((backlink, index) => (
           <div
             key={index}
-            className="px-3 py-1.5 cursor-pointer hover:bg-[rgba(148,163,184,0.05)]"
+            style={{
+              padding: "6px 12px", cursor: "pointer",
+              transition: "background-color var(--duration-fast) var(--ease-default)",
+            }}
             onClick={() => handleBacklinkClick(backlink)}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
           >
-            <div className="text-xs truncate" style={{ color: "var(--text-primary)" }}>
+            <div style={{ fontSize: "var(--text-xs)", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {backlink.source_path.split("/").pop()?.replace('.md', '')}
             </div>
-            <div className="text-[11px] truncate mt-0.5" style={{ color: "var(--text-secondary)" }}>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 2 }}>
               {backlink.link_text}
             </div>
           </div>

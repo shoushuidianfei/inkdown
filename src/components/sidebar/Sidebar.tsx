@@ -18,27 +18,30 @@ export function Sidebar() {
   ];
 
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: "var(--bg-secondary)" }}>
-      {/* 标签切换：横向单行，无下划线 */}
-      <div className="flex items-center px-2 py-1 gap-0.5">
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      {/* 标签切换：Ghost 按钮风格 */}
+      <div style={{ display: "flex", alignItems: "center", padding: "8px 8px 4px", gap: 2 }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs rounded-sm transition-colors"
-            style={{
-              color: activeTab === tab.id ? "var(--accent)" : "var(--text-muted)",
-              backgroundColor: activeTab === tab.id ? "var(--accent-dim)" : "transparent",
-            }}
             onClick={() => setActiveTab(tab.id)}
+            style={{
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "6px 8px",
+              fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
+              borderRadius: "var(--radius-sm)",
+              color: activeTab === tab.id ? "var(--accent)" : "var(--text-tertiary)",
+              backgroundColor: activeTab === tab.id ? "var(--accent-muted)" : "transparent",
+              transition: "all var(--duration-fast) var(--ease-default)",
+            }}
           >
-            <tab.icon size={13} />
+            <tab.icon size={14} />
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* 内容区域 */}
-      <div className="flex-1 overflow-hidden">
+      <div style={{ flex: 1, overflow: "hidden" }}>
         {activeTab === "files" && <FileTree />}
         {activeTab === "search" && <SearchPanel />}
         {activeTab === "bookmarks" && <BookmarksPanel />}

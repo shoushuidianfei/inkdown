@@ -16,27 +16,32 @@ export function RightSidebar() {
   ];
 
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: "var(--bg-secondary)" }}>
-      {/* 标签切换：单行横向排列，无边框 */}
-      <div className="flex items-center px-2 py-1 gap-0.5">
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-sidebar)" }}>
+      {/* 标签切换：单行横向排列，ghost button */}
+      <div style={{ display: "flex", alignItems: "center", padding: "8px 8px 4px", gap: 2 }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className="flex items-center gap-1 px-2 py-1 text-xs rounded-sm transition-colors"
             style={{
-              color: activeTab === tab.id ? "var(--accent)" : "var(--text-muted)",
-              backgroundColor: activeTab === tab.id ? "var(--accent-dim)" : "transparent",
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "0 8px", height: 28, borderRadius: "var(--radius-sm)",
+              fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+              color: activeTab === tab.id ? "var(--accent)" : "var(--text-tertiary)",
+              backgroundColor: activeTab === tab.id ? "var(--accent-muted)" : "transparent",
+              transition: "all var(--duration-fast) var(--ease-default)",
             }}
             onClick={() => setActiveTab(tab.id)}
+            onMouseEnter={(e) => { if (activeTab !== tab.id) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
+            onMouseLeave={(e) => { if (activeTab !== tab.id) e.currentTarget.style.backgroundColor = "transparent"; }}
           >
-            <tab.icon size={13} />
+            <tab.icon size={14} />
             {tab.label}
           </button>
         ))}
       </div>
 
       {/* 内容区域 */}
-      <div className="flex-1 overflow-hidden">
+      <div style={{ flex: 1, overflow: "hidden" }}>
         {activeTab === "backlinks" && <BacklinksPanel />}
         {activeTab === "outline" && <OutlinePanel />}
         {activeTab === "ai" && <AIPanel />}

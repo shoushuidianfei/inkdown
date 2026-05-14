@@ -5,49 +5,52 @@ export function BookmarksPanel() {
 
   if (bookmarks.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center px-4">
-        <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-          暂无收藏
-        </p>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 16 }}>
+        <p style={{ fontSize: "var(--text-xs)", textAlign: "center", color: "var(--text-tertiary)" }}>暂无收藏</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-3 py-1.5">
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {bookmarks.length} 个收藏
-        </p>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "6px 12px" }}>
+        <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>{bookmarks.length} 个收藏</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div style={{ flex: 1, overflowY: "auto" }}>
         {bookmarks.map((path) => {
           const name = path.split("/").pop() || path;
           return (
             <div
               key={path}
-              className="flex items-center px-3 py-1 cursor-pointer hover:bg-[rgba(148,163,184,0.05)] group transition-colors"
+              style={{
+                display: "flex", alignItems: "center", padding: "0 12px", height: 32,
+                cursor: "pointer", transition: "background-color var(--duration-fast) var(--ease-default)",
+              }}
               onClick={() => openFile(path, name)}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
-              <span className="flex-1 truncate text-xs" style={{ color: "var(--text-primary)" }}>
+              <span style={{ flex: 1, fontSize: "var(--text-xs)", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {name.replace(/\.md$/, "")}
               </span>
               <button
-                className="opacity-0 group-hover:opacity-100 text-[10px] px-1 rounded-sm hover:bg-[rgba(148,163,184,0.1)]"
-                style={{ color: "var(--text-muted)" }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeBookmark(path);
+                style={{
+                  width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center",
+                  borderRadius: "var(--radius-sm)", fontSize: 12, color: "var(--text-tertiary)",
+                  opacity: 0, transition: "opacity var(--duration-fast) var(--ease-default)",
                 }}
+                className="bookmark-remove"
+                onClick={(e) => { e.stopPropagation(); removeBookmark(path); }}
                 title="取消收藏"
               >
-                ×
+                x
               </button>
             </div>
           );
         })}
       </div>
+      <style>{`.bookmark-remove { opacity: 0; } div:hover > .bookmark-remove { opacity: 1; }`}</style>
     </div>
   );
 }

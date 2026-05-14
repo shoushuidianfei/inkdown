@@ -10,21 +10,16 @@ import { RangeSetBuilder } from "@codemirror/state";
 import { autocompletion, CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { invoke } from "@tauri-apps/api/core";
 
-// Wikilink 正则: [[target]] 或 [[target|display]]
 const WIKILINK_RE = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
-// Embed 正则: ![[file]]
 const EMBED_RE = /!\[\[([^\]]+)\]\]/g;
 
-// 链接装饰样式
 const wikilinkMark = Decoration.mark({ class: "cm-wikilink" });
 const embedMark = Decoration.mark({ class: "cm-embed" });
 
-// 获取 store（延迟获取避免循环依赖）
 function getStore() {
   return (window as any).__inkdown_store;
 }
 
-// 获取文件名列表（用于自动补全）
 function getFileNames(): string[] {
   try {
     const store = getStore();
@@ -37,7 +32,6 @@ function getFileNames(): string[] {
   return [];
 }
 
-// 获取文件名 -> 路径映射
 function getFilePaths(): Map<string, string> {
   const map = new Map<string, string>();
   try {
@@ -54,7 +48,6 @@ function getFilePaths(): Map<string, string> {
   return map;
 }
 
-// 获取完整路径 -> 路径映射（用于精确匹配）
 function getFullPathMap(): Map<string, string> {
   const map = new Map<string, string>();
   try {
@@ -63,7 +56,6 @@ function getFullPathMap(): Map<string, string> {
       store.files
         .filter((f: any) => !f.is_dir)
         .forEach((f: any) => {
-          // 去掉 .md 后缀的相对路径作为 key
           const relPath = f.path.replace(/\.md$/, "");
           map.set(relPath, f.path);
         });
@@ -72,45 +64,33 @@ function getFullPathMap(): Map<string, string> {
   return map;
 }
 
-// 查找目标文件路径（优先完整路径匹配）
 function resolveTargetPath(target: string): string | null {
   const fullPathMap = getFullPathMap();
   const filePaths = getFilePaths();
   return fullPathMap.get(target) || filePaths.get(target) || null;
 }
 
-// P1-1: 构建装饰集合（带代码块状态追踪）
 function buildDecorations(view: EditorView): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
   const doc = view.state.doc;
-
   let inCodeBlock = false;
 
   for (let i = 1; i <= doc.lines; i++) {
     const line = doc.line(i);
     const text = line.text;
 
-    // 代码块边界追踪
-    if (text.trimStart().startsWith("```")) {
-      inCodeBlock = !inCodeBlock;
-      continue;
-    }
-
-    // 跳过代码块内容
+    if (text.trimStart().startsWith("```")) { inCodeBlock = !inCodeBlock; continue; }
     if (inCodeBlock) continue;
 
-    // 匹配 embed: ![[file]]
     for (const match of text.matchAll(EMBED_RE)) {
       const start = line.from + match.index!;
       const end = start + match[0].length;
       builder.add(start, end, embedMark);
     }
 
-    // 匹配 wikilink: [[target]] 或 [[target|display]]
     for (const match of text.matchAll(WIKILINK_RE)) {
       const start = line.from + match.index!;
       const end = start + match[0].length;
-      // 避免与 embed 重叠（embed 以 ! 开头）
       if (match.index! > 0 && text[match.index! - 1] === "!") continue;
       builder.add(start, end, wikilinkMark);
     }
@@ -119,15 +99,10 @@ function buildDecorations(view: EditorView): DecorationSet {
   return builder.finish();
 }
 
-// Wikilink 装饰插件
 const wikilinkDecorationPlugin = ViewPlugin.fromClass(
   class {
     decorations: DecorationSet;
-
-    constructor(view: EditorView) {
-      this.decorations = buildDecorations(view);
-    }
-
+    constructor(view: EditorView) { this.decorations = buildDecorations(view); }
     update(update: ViewUpdate) {
       if (update.docChanged || update.viewportChanged) {
         this.decorations = buildDecorations(update.view);
@@ -137,12 +112,9 @@ const wikilinkDecorationPlugin = ViewPlugin.fromClass(
   { decorations: (v) => v.decorations }
 );
 
-// P1-3: 点击跳转处理（支持完整路径匹配）
 function handleClick(event: MouseEvent, view: EditorView): boolean {
   const target = event.target as HTMLElement;
-  if (!target.classList.contains("cm-wikilink") && !target.classList.contains("cm-embed")) {
-    return false;
-  }
+  if (!target.classList.contains("cm-wikilink") && !target.classList.contains("cm-embed")) return false;
 
   const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
   if (pos === null) return false;
@@ -159,18 +131,14 @@ function handleClick(event: MouseEvent, view: EditorView): boolean {
       const filePath = resolveTargetPath(linkTarget);
       if (filePath) {
         const store = getStore();
-        if (store) {
-          store.openFile(filePath, linkTarget.split("/").pop() + ".md");
-        }
+        if (store) store.openFile(filePath, linkTarget.split("/").pop() + ".md");
       }
       return true;
     }
   }
-
   return false;
 }
 
-// P1-5: 悬停预览
 const wikilinkHover = hoverTooltip((view, pos, _side) => {
   const line = view.state.doc.lineAt(pos);
   const lineText = line.text;
@@ -191,12 +159,10 @@ const wikilinkHover = hoverTooltip((view, pos, _side) => {
         create() {
           const dom = document.createElement("div");
           dom.className = "cm-wikilink-tooltip";
-          dom.style.cssText =
-            "padding: 8px 12px; max-width: 360px; max-height: 240px; overflow: auto; font-size: 13px; background: var(--bg-secondary); border-radius: 6px; color: var(--text-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.2); line-height: 1.6;";
+          dom.style.cssText = "padding: 8px 12px; max-width: 360px; max-height: 240px; overflow: auto; font-size: 13px; background: var(--bg-elevated); border-radius: 8px; color: var(--text-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.15); line-height: 1.6; border: var(--border-subtle);";
 
           dom.textContent = "加载中...";
 
-          // 尝试从已打开的标签获取内容
           if (filePath) {
             const store = getStore();
             if (store) {
@@ -209,7 +175,6 @@ const wikilinkHover = hoverTooltip((view, pos, _side) => {
               }
             }
 
-            // 未打开则异步读取
             const store2 = getStore();
             if (store2?.vaultPath) {
               invoke<string>("read_file", {
@@ -225,7 +190,7 @@ const wikilinkHover = hoverTooltip((view, pos, _side) => {
             }
           } else {
             dom.textContent = `[${linkTarget}] - 文件不存在`;
-            dom.style.color = "var(--text-muted)";
+            dom.style.color = "var(--text-tertiary)";
           }
 
           return { dom };
@@ -233,23 +198,18 @@ const wikilinkHover = hoverTooltip((view, pos, _side) => {
       };
     }
   }
-
   return null;
 }, { hoverTime: 300 });
 
-// P1-2: 自动补全源（使用 matchBefore 精确匹配）
 function wikilinkAutocompletion(context: CompletionContext): CompletionResult | null {
   const match = context.matchBefore(/\[\[[^\]|]*$/);
   if (!match) return null;
 
-  const from = match.from + 2; // 跳过 [[
-
+  const from = match.from + 2;
   const fileNames = getFileNames();
   const fullPathMap = getFullPathMap();
 
-  // 补全选项：显示文件名，但包含路径信息
   const options = [
-    // 文件名匹配
     ...fileNames.map((name) => ({
       label: name,
       type: "text",
@@ -258,7 +218,6 @@ function wikilinkAutocompletion(context: CompletionContext): CompletionResult | 
     })),
   ];
 
-  // 也添加完整路径作为选项（去重）
   for (const [relPath, fullPath] of fullPathMap) {
     if (!fileNames.includes(relPath) && relPath.includes("/")) {
       options.push({
@@ -270,14 +229,9 @@ function wikilinkAutocompletion(context: CompletionContext): CompletionResult | 
     }
   }
 
-  return {
-    from,
-    options,
-    filter: true,
-  };
+  return { from, options, filter: true };
 }
 
-// 导出组合扩展
 export function wikilinkExtension() {
   return [
     wikilinkDecorationPlugin,
@@ -287,7 +241,7 @@ export function wikilinkExtension() {
       override: [wikilinkAutocompletion],
       activateOnTyping: true,
     }),
-    // Wikilink 样式
+    // Wikilink 样式 — 使用新 accent 色 #4f8eff
     EditorView.baseTheme({
       ".cm-wikilink": {
         color: "var(--accent)",

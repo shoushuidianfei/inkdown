@@ -25,50 +25,55 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center" }}>
       {/* 背景遮罩 */}
       <div
-        className="absolute inset-0"
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
+        style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0, 0, 0, 0.4)" }}
         onClick={onClose}
       />
 
-      {/* 模态框 */}
+      {/* 模态框: max-width 520px, --radius-lg, --bg-elevated, 24px padding */}
       <div
-        className="relative w-[640px] h-[480px] rounded-md flex overflow-hidden"
         style={{
-          backgroundColor: "var(--bg-primary)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+          position: "relative", width: 520, height: 420, borderRadius: "var(--radius-lg)",
+          display: "flex", overflow: "hidden",
+          backgroundColor: "var(--bg-elevated)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
         }}
       >
-        {/* 左侧标签 */}
+        {/* 左侧标签: 120px */}
         <div
-          className="w-32 flex flex-col py-2"
-          style={{ backgroundColor: "var(--bg-secondary)" }}
+          style={{ width: 120, display: "flex", flexDirection: "column", padding: "8px 0", backgroundColor: "var(--bg-sidebar)" }}
         >
-          <div className="px-3 py-2 flex items-center justify-between">
-            <h2 className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+          <div style={{ padding: "0 12px", height: 40, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)", color: "var(--text-primary)" }}>
               设置
-            </h2>
+            </span>
             <button
-              className="p-0.5 rounded hover:bg-[rgba(148,163,184,0.05)]"
-              style={{ color: "var(--text-muted)" }}
+              style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-sm)", color: "var(--text-tertiary)", transition: "background-color var(--duration-fast) var(--ease-default)" }}
               onClick={onClose}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
             >
               <X size={14} />
             </button>
           </div>
 
-          <div className="flex-1 px-1">
+          <div style={{ flex: 1, padding: "0 4px" }}>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs transition-colors"
                 style={{
-                  backgroundColor: activeTab === tab.id ? "var(--accent-dim)" : "transparent",
+                  width: "100%", display: "flex", alignItems: "center", gap: 8,
+                  padding: "0 8px", height: 32, borderRadius: "var(--radius-sm)",
+                  fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+                  backgroundColor: activeTab === tab.id ? "var(--accent-muted)" : "transparent",
                   color: activeTab === tab.id ? "var(--accent)" : "var(--text-secondary)",
+                  transition: "all var(--duration-fast) var(--ease-default)",
                 }}
                 onClick={() => setActiveTab(tab.id)}
+                onMouseEnter={(e) => { if (activeTab !== tab.id) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
+                onMouseLeave={(e) => { if (activeTab !== tab.id) e.currentTarget.style.backgroundColor = "transparent"; }}
               >
                 <tab.icon size={13} />
                 {tab.label}
@@ -78,26 +83,29 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         {/* 右侧内容 */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
           {activeTab === "ai" && <AISettings />}
           {activeTab === "sync" && <SyncSettings />}
           {activeTab === "theme" && (
             <div>
-              <h2 className="text-base font-medium mb-4" style={{ color: "var(--text-primary)" }}>
+              <h2 style={{ fontSize: "var(--text-base)", fontWeight: "var(--font-medium)", color: "var(--text-primary)", marginBottom: 24 }}>
                 主题
               </h2>
 
-              <div className="flex gap-3">
+              <div style={{ display: "flex", gap: 12 }}>
                 {[
                   { id: "dark" as Theme, name: "暗色", icon: Moon },
                   { id: "light" as Theme, name: "亮色", icon: Sun },
                 ].map((t) => (
                   <button
                     key={t.id}
-                    className="flex items-center gap-2 px-3 py-2 rounded-sm text-sm transition-colors"
                     style={{
-                      backgroundColor: theme === t.id ? "var(--accent-dim)" : "var(--bg-secondary)",
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "0 12px", height: 36, borderRadius: "var(--radius-md)",
+                      fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
+                      backgroundColor: theme === t.id ? "var(--accent-muted)" : "var(--bg-hover)",
                       color: theme === t.id ? "var(--accent)" : "var(--text-primary)",
+                      transition: "all var(--duration-fast) var(--ease-default)",
                     }}
                     onClick={() => setTheme(t.id)}
                   >
@@ -111,10 +119,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           )}
           {activeTab === "shortcuts" && (
             <div>
-              <h2 className="text-base font-medium mb-4" style={{ color: "var(--text-primary)" }}>
+              <h2 style={{ fontSize: "var(--text-base)", fontWeight: "var(--font-medium)", color: "var(--text-primary)", marginBottom: 24 }}>
                 快捷键
               </h2>
-              <div className="space-y-1">
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
                   { key: "Ctrl+K", action: "命令面板" },
                   { key: "Ctrl+P", action: "快速打开文件" },
@@ -128,14 +136,18 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 ].map((item) => (
                   <div
                     key={item.key}
-                    className="flex items-center justify-between px-3 py-1.5 rounded-sm"
-                    style={{ backgroundColor: "var(--bg-secondary)" }}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "0 12px", height: 32, borderRadius: "var(--radius-sm)",
+                      backgroundColor: "var(--bg-hover)",
+                    }}
                   >
-                    <span className="text-xs" style={{ color: "var(--text-primary)" }}>{item.action}</span>
+                    <span style={{ fontSize: "var(--text-xs)", color: "var(--text-primary)" }}>{item.action}</span>
                     <kbd
-                      className="px-1.5 py-0.5 rounded text-xs"
                       style={{
-                        backgroundColor: "var(--bg-tertiary)",
+                        padding: "2px 6px", borderRadius: "var(--radius-sm)",
+                        fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+                        backgroundColor: "var(--bg-active)",
                         color: "var(--text-secondary)",
                       }}
                     >

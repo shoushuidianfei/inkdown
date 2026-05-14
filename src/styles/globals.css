@@ -1,0 +1,241 @@
+@import "tailwindcss";
+
+/* === 暗色主题：极深蓝底 + 明黄强调 === */
+:root,
+[data-theme="dark"] {
+  --bg-primary:   #0B1120;
+  --bg-secondary: #111827;
+  --bg-tertiary:  #1E293B;
+
+  --text-primary:   #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted:     #475569;
+
+  --accent:       #F5A623;
+  --accent-hover: #FFB800;
+  --accent-dim:   rgba(245, 166, 35, 0.12);
+
+  --border:       rgba(148, 163, 184, 0.08);
+  --border-hover: rgba(148, 163, 184, 0.15);
+
+  --success: #3B82F6;
+  --warning: #F5A623;
+  --error:   #EF4444;
+}
+
+/* === 亮色主题：浅蓝白底 + 深蓝强调 === */
+[data-theme="light"] {
+  --bg-primary:   #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --bg-tertiary:  #F1F5F9;
+
+  --text-primary:   #0F172A;
+  --text-secondary: #64748B;
+  --text-muted:     #CBD5E1;
+
+  --accent:       #2563EB;
+  --accent-hover: #1D4ED8;
+  --accent-dim:   rgba(37, 99, 235, 0.08);
+
+  --border:       rgba(15, 23, 42, 0.06);
+  --border-hover: rgba(15, 23, 42, 0.12);
+
+  --success: #2563EB;
+  --warning: #F59E0B;
+  --error:   #DC2626;
+}
+
+/* 字体 */
+:root {
+  --font-sans: system-ui, -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 全局重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 滚动条样式：极简 */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* 选中文本样式 */
+::selection {
+  background-color: var(--accent-dim);
+  color: var(--text-primary);
+}
+
+/* 链接样式 */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* 输入框样式：极简 */
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  outline: none;
+  transition: box-shadow 0.15s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  box-shadow: 0 0 0 1.5px var(--accent-dim);
+}
+
+/* 按钮样式 */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* 中文排版优化 */
+p, li, h1, h2, h3, h4, h5, h6 {
+  line-height: 1.8;
+  margin-bottom: 0.8em;
+}
+
+p:last-child, li:last-child {
+  margin-bottom: 0;
+}
+
+/* 代码块字体 */
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* 标点挤压 */
+body {
+  font-feature-settings: "palt";
+}
+
+/* 阅读模式样式 */
+.reading-view {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  line-height: 1.8;
+}
+
+.reading-view h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+}
+
+.reading-view h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.reading-view h3 {
+  font-size: 17px;
+  font-weight: 500;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.reading-view p {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.reading-view blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 16px;
+  margin: 16px 0;
+  color: var(--text-secondary);
+}
+
+.reading-view ul, .reading-view ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.reading-view code {
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.reading-view pre {
+  background: var(--bg-secondary);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.reading-view pre code {
+  background: none;
+  padding: 0;
+}
+
+.reading-view img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.reading-view hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}

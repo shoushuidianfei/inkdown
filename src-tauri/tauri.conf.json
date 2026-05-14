@@ -1,0 +1,56 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "InkDown",
+  "version": "0.1.0",
+  "identifier": "com.inkdown.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "InkDown - 本地知识管理",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    },
+    "macOS": {
+      "entitlements": null,
+      "minimumSystemVersion": "10.15"
+    },
+    "category": "Productivity",
+    "shortDescription": "本地优先的 AI 知识管理工具",
+    "longDescription": "InkDown 是一款完全免费、本地优先、内置国产 AI 的个人知识管理桌面应用，是中国用户的 Obsidian 替代品。",
+    "copyright": "Copyright © 2026 InkDown",
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  }
+}

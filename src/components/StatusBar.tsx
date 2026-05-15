@@ -15,14 +15,12 @@ export function StatusBar() {
   return (
     <div style={{
       height: 24, display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 12px", fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+      padding: "0 var(--space-3)", fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
       color: "var(--text-tertiary)", backgroundColor: "var(--bg-sidebar)",
       borderTop: "var(--border-subtle)",
     }}>
-      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {activeTab?.path || ""}
-      </span>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+      <span className="text-ellipsis">{activeTab?.path || ""}</span>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexShrink: 0 }}>
         {activeTab && <span>{wordCount} 字</span>}
         <div
           style={{ width: 6, height: 6, borderRadius: "var(--radius-full)", backgroundColor: dotColor[saveStatus] || "transparent" }}

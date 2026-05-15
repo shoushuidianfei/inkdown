@@ -30,36 +30,18 @@ function FileTreeItem({ node, depth, parentPath }: FileTreeItemProps) {
   };
   const handleDelete = async () => { if (confirm(`确定要删除 "${node.name}" 吗？`)) await deleteFile(fullPath); setShowContextMenu(false); };
 
-  const MenuItem = ({ onClick, color, children }: any) => (
-    <button
-      onClick={(e) => { e.stopPropagation(); onClick(); setShowContextMenu(false); }}
-      style={{
-        width: "100%", display: "flex", alignItems: "center", gap: 8,
-        padding: "0 12px", height: 32, fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
-        color: color || "var(--text-secondary)",
-        borderRadius: "var(--radius-sm)",
-        transition: "background-color var(--duration-fast) var(--ease-default)",
-      }}
-      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-    >
-      {children}
-    </button>
-  );
-
   return (
     <div>
       <div
+        className="hover-bg"
         onClick={handleClick} onContextMenu={handleContextMenu}
         style={{
-          display: "flex", alignItems: "center", gap: 6,
-          padding: `0 12px 0 ${depth * 16 + 12}px`, height: 32,
+          display: "flex", alignItems: "center", gap: "var(--space-2)",
+          padding: `0 var(--space-3) 0 ${depth * 16 + 12}px`, height: 32,
           cursor: "pointer", position: "relative",
           fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)", color: "var(--text-secondary)",
-          transition: "background-color var(--duration-fast) var(--ease-default)",
         }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-        onMouseLeave={(e) => { setShowContextMenu(false); e.currentTarget.style.backgroundColor = "transparent"; }}
+        onMouseLeave={() => setShowContextMenu(false)}
       >
         {node.is_dir && (
           <span style={{ width: 16, height: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-tertiary)" }}>
@@ -77,29 +59,24 @@ function FileTreeItem({ node, depth, parentPath }: FileTreeItemProps) {
             autoFocus
           />
         ) : (
-          <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{node.name}</span>
+          <span className="text-ellipsis" style={{ flex: 1 }}>{node.name}</span>
         )}
 
         {/* 右键菜单 */}
         {showContextMenu && (
-          <div style={{
-            position: "absolute", left: "100%", top: 0, zIndex: 50,
-            width: 160, padding: 4,
-            backgroundColor: "var(--bg-elevated)", borderRadius: "var(--radius-md)",
-            border: "var(--border-subtle)", boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-          }}>
+          <div className="popup-card" style={{ position: "absolute", left: "100%", top: 0, zIndex: 50, width: 160, padding: "var(--space-1)" }}>
             {node.is_dir && (<>
-              <MenuItem onClick={() => createNewFile(fullPath)}><FilePlus size={14} /> 新建文件</MenuItem>
-              <MenuItem onClick={() => createNewFolder(fullPath)}><FolderPlus size={14} /> 新建文件夹</MenuItem>
-              <div style={{ height: 1, backgroundColor: "var(--gray-700)", margin: "4px 0" }} />
+              <button className="menu-item" onClick={(e) => { e.stopPropagation(); createNewFile(fullPath); setShowContextMenu(false); }}><FilePlus size={14} /> 新建文件</button>
+              <button className="menu-item" onClick={(e) => { e.stopPropagation(); createNewFolder(fullPath); setShowContextMenu(false); }}><FolderPlus size={14} /> 新建文件夹</button>
+              <div style={{ height: 1, backgroundColor: "var(--gray-700)", margin: "var(--space-1) 0" }} />
             </>)}
-            <MenuItem onClick={() => setIsRenaming(true)}><Pencil size={14} /> 重命名</MenuItem>
+            <button className="menu-item" onClick={(e) => { e.stopPropagation(); setIsRenaming(true); setShowContextMenu(false); }}><Pencil size={14} /> 重命名</button>
             {!node.is_dir && (
-              <MenuItem onClick={() => bookmarked ? removeBookmark(fullPath) : addBookmark(fullPath)} color={bookmarked ? "var(--accent)" : undefined}>
+              <button className="menu-item" style={bookmarked ? { color: "var(--accent)" } : undefined} onClick={(e) => { e.stopPropagation(); bookmarked ? removeBookmark(fullPath) : addBookmark(fullPath); setShowContextMenu(false); }}>
                 <Bookmark size={14} fill={bookmarked ? "currentColor" : "none"} /> {bookmarked ? "取消收藏" : "收藏"}
-              </MenuItem>
+              </button>
             )}
-            <MenuItem onClick={handleDelete} color="var(--danger)"><Trash2 size={14} /> 删除</MenuItem>
+            <button className="menu-item" style={{ color: "var(--danger)" }} onClick={(e) => { e.stopPropagation(); handleDelete(); }}><Trash2 size={14} /> 删除</button>
           </div>
         )}
       </div>
@@ -117,30 +94,22 @@ export function FileTree() {
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 12px 8px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--space-3) var(--space-3) var(--space-2)" }}>
         <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)", color: "var(--text-tertiary)" }}>
           {vaultName || "文件"}
         </span>
         <div style={{ position: "relative" }}>
           <button
-            style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-md)", color: "var(--gray-400)", transition: "background-color var(--duration-fast) var(--ease-default)" }}
+            className="hover-bg"
+            style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-md)", color: "var(--gray-400)" }}
             onClick={() => setShowRootMenu(!showRootMenu)} onMouseLeave={() => setShowRootMenu(false)}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
           >
             <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
           </button>
           {showRootMenu && (
-            <div style={{ position: "absolute", right: 0, top: "100%", zIndex: 50, width: 160, padding: 4, backgroundColor: "var(--bg-elevated)", borderRadius: "var(--radius-md)", border: "var(--border-subtle)", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
-              <button style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "0 12px", height: 32, fontSize: "var(--text-sm)", color: "var(--text-secondary)", borderRadius: "var(--radius-sm)" }}
-                onClick={() => { createNewFile(""); setShowRootMenu(false); }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-              ><FilePlus size={14} /> 新建文件</button>
-              <button style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "0 12px", height: 32, fontSize: "var(--text-sm)", color: "var(--text-secondary)", borderRadius: "var(--radius-sm)" }}
-                onClick={() => { createNewFolder(""); setShowRootMenu(false); }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-              ><FolderPlus size={14} /> 新建文件夹</button>
+            <div className="popup-card" style={{ position: "absolute", right: 0, top: "100%", zIndex: 50, width: 160, padding: "var(--space-1)" }}>
+              <button className="menu-item" onClick={() => { createNewFile(""); setShowRootMenu(false); }}><FilePlus size={14} /> 新建文件</button>
+              <button className="menu-item" onClick={() => { createNewFolder(""); setShowRootMenu(false); }}><FolderPlus size={14} /> 新建文件夹</button>
             </div>
           )}
         </div>
@@ -148,7 +117,7 @@ export function FileTree() {
 
       <div style={{ flex: 1, overflowY: "auto", padding: "4px 0" }}>
         {files.length === 0 ? (
-          <div style={{ padding: "48px 16px", textAlign: "center" }}>
+          <div style={{ padding: "var(--space-7) var(--space-4)", textAlign: "center" }}>
             <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>暂无文件</p>
           </div>
         ) : files.map((node) => <FileTreeItem key={node.path} node={node} depth={0} parentPath="" />)}

@@ -76,9 +76,9 @@ export function SyncSettings() {
   };
 
   const statusColors: Record<string, { bg: string; text: string }> = {
-    success: { bg: "var(--success)", text: "#ffffff" },
-    error: { bg: "var(--danger)", text: "#ffffff" },
-    syncing: { bg: "var(--warning)", text: "#ffffff" },
+    success: { bg: "var(--success)", text: "var(--text-on-accent)" },
+    error: { bg: "var(--danger)", text: "var(--text-on-accent)" },
+    syncing: { bg: "var(--warning)", text: "var(--text-on-accent)" },
     idle: { bg: "var(--bg-hover)", text: "var(--text-tertiary)" },
   };
 
@@ -153,7 +153,7 @@ export function SyncSettings() {
           style={{
             padding: "0 16px", height: 32, borderRadius: "var(--radius-sm)",
             fontSize: "var(--text-xs)", fontWeight: "var(--font-medium)",
-            backgroundColor: "var(--accent)", color: "#ffffff",
+            backgroundColor: "var(--accent)", color: "var(--text-on-accent)",
           }}
         >
           {saved ? "已保存" : "保存"}

@@ -25,15 +25,7 @@ export function ReadingView({ content }: ReadingViewProps) {
     <div style={{ height: "100%", overflow: "auto", backgroundColor: "var(--bg-main)" }}>
       <div
         className="reading-view"
-        style={{
-          maxWidth: 720,
-          margin: "0 auto",
-          padding: "48px 24px",
-          color: "var(--text-primary)",
-          fontFamily: 'system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif',
-          lineHeight: "1.8",
-          fontSize: "var(--text-base)",
-        }}
+        style={{ color: "var(--text-primary)" }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

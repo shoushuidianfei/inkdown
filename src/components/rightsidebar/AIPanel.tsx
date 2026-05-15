@@ -43,26 +43,23 @@ export function AIPanel() {
   const renderMessage = (msg: ChatMessage) => {
     const isUser = msg.role === "user";
     return (
-      <div key={msg.id} style={{ display: "flex", gap: 8, marginBottom: 12, flexDirection: isUser ? "row-reverse" : "row" }}>
-        {/* 头像: 20px */}
+      <div key={msg.id} style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-3)", flexDirection: isUser ? "row-reverse" : "row" }}>
         <div
           style={{
             width: 20, height: 20, borderRadius: "var(--radius-full)",
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
             backgroundColor: isUser ? "var(--accent)" : "var(--bg-hover)",
-            color: isUser ? "#ffffff" : "var(--text-secondary)",
+            color: isUser ? "var(--text-on-accent)" : "var(--text-secondary)",
           }}
         >
           {isUser ? <User size={10} /> : <Bot size={10} />}
         </div>
-        {/* 消息气泡: 13px/400 */}
         <div
           style={{
-            flex: 1, padding: "8px 12px", borderRadius: "var(--radius-md)",
+            flex: 1, padding: "var(--space-2) var(--space-3)", borderRadius: "var(--radius-md)",
             fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
             backgroundColor: isUser ? "var(--accent-muted)" : "transparent",
-            color: "var(--text-primary)",
-            whiteSpace: "pre-wrap",
+            color: "var(--text-primary)", whiteSpace: "pre-wrap",
           }}
         >
           {msg.content}
@@ -83,25 +80,15 @@ export function AIPanel() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* 头部 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 12px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--space-2) var(--space-3)" }}>
         <span style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>AI 助手</span>
-        <button
-          style={{
-            width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center",
-            borderRadius: "var(--radius-sm)", color: "var(--text-tertiary)",
-            transition: "background-color var(--duration-fast) var(--ease-default)",
-          }}
-          onClick={clearMessages}
-          title="清空对话"
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-        >
+        <button className="icon-btn" style={{ width: 20, height: 20 }} onClick={clearMessages} title="清空对话">
           <Trash2 size={11} />
         </button>
       </div>
 
       {/* 消息列表 */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "4px 12px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "var(--space-1) var(--space-3)" }}>
         {messages.length === 0 && !isStreaming && (
           <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <p style={{ fontSize: "var(--text-xs)", textAlign: "center", color: "var(--text-tertiary)" }}>开始与 AI 对话</p>
@@ -112,7 +99,7 @@ export function AIPanel() {
 
         {/* 流式响应 */}
         {isStreaming && (
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-3)" }}>
             <div
               style={{
                 width: 20, height: 20, borderRadius: "var(--radius-full)",
@@ -124,7 +111,7 @@ export function AIPanel() {
             </div>
             <div
               style={{
-                flex: 1, padding: "8px 12px", borderRadius: "var(--radius-md)",
+                flex: 1, padding: "var(--space-2) var(--space-3)", borderRadius: "var(--radius-md)",
                 fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
                 backgroundColor: "transparent", color: "var(--text-primary)",
               }}
@@ -138,8 +125,8 @@ export function AIPanel() {
       </div>
 
       {/* 输入框: bg --gray-800, --border-subtle, --radius-lg, 40px min-height */}
-      <div style={{ padding: 8 }}>
-        <div style={{ display: "flex", gap: 6 }}>
+      <div style={{ padding: "var(--space-2)" }}>
+        <div style={{ display: "flex", gap: "var(--space-2)" }}>
           <textarea
             ref={inputRef}
             value={input}
@@ -147,7 +134,7 @@ export function AIPanel() {
             onKeyDown={handleKeyDown}
             placeholder="输入问题..."
             style={{
-              flex: 1, padding: "8px 10px", fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+              flex: 1, padding: "var(--space-2) var(--space-3)", fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
               resize: "none", minHeight: 40, maxHeight: 80,
               backgroundColor: "var(--gray-800)", color: "var(--text-primary)",
               border: "var(--border-subtle)", borderRadius: "var(--radius-lg)",
@@ -157,18 +144,17 @@ export function AIPanel() {
           <button
             onClick={handleSend}
             disabled={!input.trim() || isStreaming}
+            className="icon-btn"
             style={{
-              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
-              borderRadius: "var(--radius-md)", flexShrink: 0, alignSelf: "flex-end",
+              width: 32, height: 32, alignSelf: "flex-end",
               backgroundColor: input.trim() && !isStreaming ? "var(--accent)" : "var(--bg-hover)",
-              color: input.trim() && !isStreaming ? "#ffffff" : "var(--text-tertiary)",
-              transition: "all var(--duration-fast) var(--ease-default)",
+              color: input.trim() && !isStreaming ? "var(--text-on-accent)" : "var(--text-tertiary)",
             }}
           >
             {isStreaming ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Send size={12} />}
           </button>
         </div>
-        <p style={{ fontSize: 10, marginTop: 4, color: "var(--text-tertiary)" }}>{config.model}</p>
+        <p style={{ fontSize: 10, marginTop: "var(--space-1)", color: "var(--text-tertiary)" }}>{config.model}</p>
       </div>
     </div>
   );

@@ -167,11 +167,12 @@ export function GraphView() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", position: "relative", backgroundColor: "var(--gray-950)" }}>
       {/* 搜索栏 */}
-      <div style={{ position: "absolute", top: 12, left: 12, right: 12, zIndex: 10 }}>
+      <div style={{ position: "absolute", top: "var(--space-3)", left: "var(--space-3)", right: "var(--space-3)", zIndex: 10 }}>
         <div style={{ position: "relative" }}>
-          <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)" }} />
+          <Search size={13} style={{ position: "absolute", left: "var(--space-3)", top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)" }} />
           <input
             type="text"
+            className="glass"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="搜索节点..."
@@ -179,13 +180,12 @@ export function GraphView() {
               width: "100%", padding: "0 28px 0 32px", height: 32,
               fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
               borderRadius: "var(--radius-md)",
-              backgroundColor: "rgba(13,13,18,0.6)", backdropFilter: "blur(8px)",
               border: "none", color: "var(--text-primary)",
             }}
           />
           {searchQuery && (
             <button
-              style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)" }}
+              style={{ position: "absolute", right: "var(--space-3)", top: "50%", transform: "translateY(-50%)", color: "var(--text-tertiary)" }}
               onClick={() => setSearchQuery("")}
             >
               <X size={12} />
@@ -199,19 +199,13 @@ export function GraphView() {
         <svg ref={svgRef} style={{ width: "100%", height: "100%", backgroundColor: "var(--gray-950)" }} />
 
         {/* 图例 */}
-        <div
-          style={{
-            position: "absolute", bottom: 16, left: 16,
-            padding: "8px 12px", borderRadius: "var(--radius-md)",
-            backgroundColor: "rgba(13,13,18,0.6)", backdropFilter: "blur(8px)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "var(--text-secondary)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <div className="glass" style={{ position: "absolute", bottom: "var(--space-4)", left: "var(--space-4)", padding: "var(--space-2) var(--space-3)", borderRadius: "var(--radius-md)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", fontSize: 11, color: "var(--text-secondary)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
               <div style={{ width: 6, height: 6, borderRadius: "var(--radius-full)", backgroundColor: "var(--gray-400)" }} />
               <span>普通</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)" }}>
               <div style={{ width: 6, height: 6, borderRadius: "var(--radius-full)", backgroundColor: "var(--accent)" }} />
               <span>选中</span>
             </div>
@@ -219,16 +213,10 @@ export function GraphView() {
         </div>
 
         {/* 统计信息 */}
-        <div
-          style={{
-            position: "absolute", bottom: 16, right: 16,
-            padding: "8px 12px", borderRadius: "var(--radius-md)",
-            backgroundColor: "rgba(13,13,18,0.6)", backdropFilter: "blur(8px)",
-          }}
-        >
+        <div className="glass" style={{ position: "absolute", bottom: "var(--space-4)", right: "var(--space-4)", padding: "var(--space-2) var(--space-3)", borderRadius: "var(--radius-md)" }}>
           <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>
             <span>{graphData.nodes.length} 节点</span>
-            <span style={{ margin: "0 6px" }}>·</span>
+            <span style={{ margin: "0 var(--space-2)" }}>·</span>
             <span>{graphData.edges.length} 连接</span>
           </div>
         </div>

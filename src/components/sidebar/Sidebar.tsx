@@ -19,21 +19,13 @@ export function Sidebar() {
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      {/* 标签切换：Ghost 按钮风格 */}
-      <div style={{ display: "flex", alignItems: "center", padding: "8px 8px 4px", gap: 2 }}>
+      <div style={{ display: "flex", alignItems: "center", padding: "var(--space-2) var(--space-2) var(--space-1)", gap: 2 }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            className={`tab-btn${activeTab === tab.id ? " active" : ""}`}
+            style={{ height: 28, fontSize: "var(--text-sm)", padding: "var(--space-2) var(--space-2)" }}
             onClick={() => setActiveTab(tab.id)}
-            style={{
-              display: "flex", alignItems: "center", gap: 4,
-              padding: "6px 8px",
-              fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
-              borderRadius: "var(--radius-sm)",
-              color: activeTab === tab.id ? "var(--accent)" : "var(--text-tertiary)",
-              backgroundColor: activeTab === tab.id ? "var(--accent-muted)" : "transparent",
-              transition: "all var(--duration-fast) var(--ease-default)",
-            }}
           >
             <tab.icon size={14} />
             {tab.label}

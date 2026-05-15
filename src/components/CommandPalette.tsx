@@ -58,11 +58,11 @@ export function CommandPalette({ isOpen, onClose, onOpenSettings, onToggleGraph 
   if (!isOpen) return null;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "flex-start", justifyContent: "center", paddingTop: "20vh" }}>
-      <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.5)" }} onClick={onClose} />
-      <div style={{ position: "relative", width: 560, maxHeight: 400, borderRadius: "var(--radius-lg)", overflow: "hidden", backgroundColor: "var(--bg-elevated)", border: "var(--border-subtle)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)" }}>
-        {/* 搜索框 48px */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 48, borderBottom: "0.5px solid var(--gray-700)" }}>
+    <div className="overlay" style={{ paddingTop: "20vh" }}>
+      <div style={{ position: "absolute", inset: 0 }} onClick={onClose} />
+      <div style={{ position: "relative", width: 560, maxHeight: 400, borderRadius: "var(--radius-lg)", overflow: "hidden", backgroundColor: "var(--bg-elevated)", border: "var(--border-subtle)", boxShadow: "var(--shadow-popup)" }}>
+        {/* 搜索框 */}
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "0 var(--space-4)", height: 48, borderBottom: "0.5px solid var(--gray-700)" }}>
           <Search size={16} style={{ color: "var(--gray-500)", flexShrink: 0 }} />
           <input ref={inputRef} type="text" value={query} onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
             placeholder="搜索文件、命令或标签..."
@@ -71,14 +71,14 @@ export function CommandPalette({ isOpen, onClose, onOpenSettings, onToggleGraph 
         </div>
 
         {/* 结果列表 */}
-        <div ref={listRef} style={{ maxHeight: 340, overflowY: "auto", padding: "4px 0" }}>
+        <div ref={listRef} style={{ maxHeight: 340, overflowY: "auto", padding: "var(--space-1) 0" }}>
           {filtered.length === 0 ? (
-            <div style={{ padding: "32px 16px", textAlign: "center", fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>未找到匹配结果</div>
+            <div style={{ padding: "var(--space-6) var(--space-4)", textAlign: "center", fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>未找到匹配结果</div>
           ) : filtered.map((cmd, i) => (
             <div key={cmd.id} onClick={cmd.action} onMouseEnter={() => setSelectedIndex(i)}
               style={{
-                display: "flex", alignItems: "center", gap: 12,
-                padding: "0 16px", height: 36, cursor: "pointer",
+                display: "flex", alignItems: "center", gap: "var(--space-3)",
+                padding: "0 var(--space-4)", height: 36, cursor: "pointer",
                 fontSize: "var(--text-sm)", fontWeight: i === selectedIndex ? "var(--font-medium)" : "var(--font-normal)",
                 color: i === selectedIndex ? "var(--accent)" : "var(--text-secondary)",
                 backgroundColor: i === selectedIndex ? "var(--accent-muted)" : "transparent",
@@ -86,7 +86,7 @@ export function CommandPalette({ isOpen, onClose, onOpenSettings, onToggleGraph 
               }}
             >
               <cmd.icon size={14} style={{ color: i === selectedIndex ? "var(--accent)" : "var(--gray-500)", flexShrink: 0 }} />
-              <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cmd.label}</span>
+              <span className="text-ellipsis" style={{ flex: 1 }}>{cmd.label}</span>
             </div>
           ))}
         </div>

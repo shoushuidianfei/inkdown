@@ -26,9 +26,10 @@ function TabItem({ tab, isActive, onClick, onClose }: TabItemProps) {
   return (
     <div
       onClick={onClick}
+      className="group"
       style={{
-        display: "flex", alignItems: "center", gap: 6,
-        padding: "0 12px", height: 40,
+        display: "flex", alignItems: "center", gap: "var(--space-2)",
+        padding: "0 var(--space-3)", height: 40,
         cursor: "pointer", minWidth: 0, maxWidth: 180,
         fontSize: "var(--text-sm)", fontWeight: isActive ? "var(--font-medium)" : "var(--font-normal)",
         color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
@@ -36,20 +37,14 @@ function TabItem({ tab, isActive, onClick, onClose }: TabItemProps) {
         transition: "all var(--duration-fast) var(--ease-default)",
         position: "relative",
       }}
-      className="group"
     >
-      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <span className="text-ellipsis" style={{ flex: 1 }}>
         {tab.name.replace(/\.md$/, "")}
       </span>
       {tab.isModified && <span style={{ color: "var(--warning)", fontSize: "var(--text-xs)" }}>•</span>}
       <button
-        className="opacity-0 group-hover:opacity-100"
-        style={{
-          width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center",
-          borderRadius: "var(--radius-sm)", flexShrink: 0,
-          color: "var(--text-tertiary)",
-          transition: "opacity var(--duration-fast) var(--ease-default)",
-        }}
+        className="icon-btn opacity-0 group-hover:opacity-100"
+        style={{ width: 20, height: 20, transition: "opacity var(--duration-fast) var(--ease-default)" }}
         onClick={(e) => { e.stopPropagation(); onClose(); }}
       >
         <X size={12} />

@@ -116,25 +116,6 @@ function App() {
     document.body.style.userSelect = "none";
   };
 
-  const IconButton = ({ onClick, title, active, children }: any) => (
-    <button
-      onClick={onClick}
-      title={title}
-      style={{
-        width: 28, height: 28,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        borderRadius: "var(--radius-md)",
-        color: active ? "var(--text-primary)" : "var(--gray-400)",
-        backgroundColor: active ? "var(--bg-active)" : "transparent",
-        transition: "all var(--duration-fast) var(--ease-default)",
-      }}
-      onMouseEnter={(e) => { if (!active) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
-      onMouseLeave={(e) => { if (!active) e.currentTarget.style.backgroundColor = "transparent"; }}
-    >
-      {children}
-    </button>
-  );
-
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-app)" }}>
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
@@ -149,14 +130,9 @@ function App() {
           </div>
         )}
         <button
-          style={{
-            width: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--gray-500)", backgroundColor: "var(--bg-app)",
-            transition: "background-color var(--duration-fast) var(--ease-default)",
-          }}
+          className="hover-bg"
+          style={{ width: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gray-500)", backgroundColor: "var(--bg-app)" }}
           onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-app)"}
         >
           <span style={{ fontSize: 10 }}>{leftSidebarCollapsed ? "»" : "«"}</span>
         </button>
@@ -164,14 +140,14 @@ function App() {
         {/* 主编辑区 */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           {/* TabBar: 40px */}
-          <div style={{ height: 40, display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: 12, paddingRight: 12, backgroundColor: "var(--bg-sidebar)", borderBottom: "var(--border-subtle)" }}>
+          <div style={{ height: 40, display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: "var(--space-3)", paddingRight: "var(--space-3)", backgroundColor: "var(--bg-sidebar)", borderBottom: "var(--border-subtle)" }}>
             <div style={{ flex: 1, overflow: "hidden" }}><TabBar /></div>
-            <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: 8 }}>
-              <IconButton onClick={() => setViewMode("editor")} title="编辑器" active={viewMode === "editor"}><FileText size={16} /></IconButton>
-              <IconButton onClick={() => setViewMode("reading")} title="阅读模式" active={viewMode === "reading"}><BookOpen size={16} /></IconButton>
-              <IconButton onClick={() => setViewMode("graph")} title="图谱视图" active={viewMode === "graph"}><Network size={16} /></IconButton>
-              <div style={{ width: 1, height: 16, margin: "0 4px", backgroundColor: "var(--border-primary)" }} />
-              <IconButton onClick={() => setShowSettings(true)} title="设置"><Settings size={16} /></IconButton>
+            <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: "var(--space-2)" }}>
+              <button className={`icon-btn${viewMode === "editor" ? " active" : ""}`} style={{ width: 28, height: 28 }} onClick={() => setViewMode("editor")} title="编辑器"><FileText size={16} /></button>
+              <button className={`icon-btn${viewMode === "reading" ? " active" : ""}`} style={{ width: 28, height: 28 }} onClick={() => setViewMode("reading")} title="阅读模式"><BookOpen size={16} /></button>
+              <button className={`icon-btn${viewMode === "graph" ? " active" : ""}`} style={{ width: 28, height: 28 }} onClick={() => setViewMode("graph")} title="图谱视图"><Network size={16} /></button>
+              <div style={{ width: 1, height: 16, margin: "0 var(--space-1)", backgroundColor: "var(--border-primary)" }} />
+              <button className="icon-btn" style={{ width: 28, height: 28 }} onClick={() => setShowSettings(true)} title="设置"><Settings size={16} /></button>
             </div>
           </div>
 
@@ -193,14 +169,9 @@ function App() {
 
         {/* 右侧边栏折叠按钮 */}
         <button
-          style={{
-            width: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--gray-500)", backgroundColor: "var(--bg-app)",
-            transition: "background-color var(--duration-fast) var(--ease-default)",
-          }}
+          className="hover-bg"
+          style={{ width: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gray-500)", backgroundColor: "var(--bg-app)" }}
           onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--bg-app)"}
         >
           <span style={{ fontSize: 10 }}>{rightSidebarCollapsed ? "«" : "»"}</span>
         </button>

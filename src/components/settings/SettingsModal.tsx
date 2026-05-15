@@ -25,55 +25,31 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      {/* 背景遮罩 */}
-      <div
-        style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0, 0, 0, 0.4)" }}
-        onClick={onClose}
-      />
+    <div className="overlay" style={{ alignItems: "center" }}>
+      <div style={{ position: "absolute", inset: 0 }} onClick={onClose} />
 
-      {/* 模态框: max-width 520px, --radius-lg, --bg-elevated, 24px padding */}
       <div
         style={{
           position: "relative", width: 520, height: 420, borderRadius: "var(--radius-lg)",
           display: "flex", overflow: "hidden",
           backgroundColor: "var(--bg-elevated)",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          boxShadow: "var(--shadow-popup)",
         }}
       >
-        {/* 左侧标签: 120px */}
-        <div
-          style={{ width: 120, display: "flex", flexDirection: "column", padding: "8px 0", backgroundColor: "var(--bg-sidebar)" }}
-        >
-          <div style={{ padding: "0 12px", height: 40, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)", color: "var(--text-primary)" }}>
-              设置
-            </span>
-            <button
-              style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-sm)", color: "var(--text-tertiary)", transition: "background-color var(--duration-fast) var(--ease-default)" }}
-              onClick={onClose}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-            >
-              <X size={14} />
-            </button>
+        {/* 左侧标签 */}
+        <div style={{ width: 120, display: "flex", flexDirection: "column", padding: "var(--space-2) 0", backgroundColor: "var(--bg-sidebar)" }}>
+          <div style={{ padding: "0 var(--space-3)", height: 40, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)", color: "var(--text-primary)" }}>设置</span>
+            <button className="icon-btn" style={{ width: 24, height: 24 }} onClick={onClose}><X size={14} /></button>
           </div>
 
-          <div style={{ flex: 1, padding: "0 4px" }}>
+          <div style={{ flex: 1, padding: "0 var(--space-1)" }}>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                style={{
-                  width: "100%", display: "flex", alignItems: "center", gap: 8,
-                  padding: "0 8px", height: 32, borderRadius: "var(--radius-sm)",
-                  fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
-                  backgroundColor: activeTab === tab.id ? "var(--accent-muted)" : "transparent",
-                  color: activeTab === tab.id ? "var(--accent)" : "var(--text-secondary)",
-                  transition: "all var(--duration-fast) var(--ease-default)",
-                }}
+                className={`tab-btn${activeTab === tab.id ? " active" : ""}`}
+                style={{ width: "100%", height: 32, fontSize: "var(--text-xs)" }}
                 onClick={() => setActiveTab(tab.id)}
-                onMouseEnter={(e) => { if (activeTab !== tab.id) e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
-                onMouseLeave={(e) => { if (activeTab !== tab.id) e.currentTarget.style.backgroundColor = "transparent"; }}
               >
                 <tab.icon size={13} />
                 {tab.label}
@@ -83,29 +59,29 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         {/* 右侧内容 */}
-        <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: "var(--space-5)" }}>
           {activeTab === "ai" && <AISettings />}
           {activeTab === "sync" && <SyncSettings />}
           {activeTab === "theme" && (
             <div>
-              <h2 style={{ fontSize: "var(--text-base)", fontWeight: "var(--font-medium)", color: "var(--text-primary)", marginBottom: 24 }}>
+              <h2 style={{ fontSize: "var(--text-base)", fontWeight: "var(--font-medium)", color: "var(--text-primary)", marginBottom: "var(--space-5)" }}>
                 主题
               </h2>
 
-              <div style={{ display: "flex", gap: 12 }}>
+              <div style={{ display: "flex", gap: "var(--space-3)" }}>
                 {[
                   { id: "dark" as Theme, name: "暗色", icon: Moon },
                   { id: "light" as Theme, name: "亮色", icon: Sun },
                 ].map((t) => (
                   <button
                     key={t.id}
+                    className="hover-bg"
                     style={{
-                      display: "flex", alignItems: "center", gap: 8,
-                      padding: "0 12px", height: 36, borderRadius: "var(--radius-md)",
+                      display: "flex", alignItems: "center", gap: "var(--space-2)",
+                      padding: "0 var(--space-3)", height: 36, borderRadius: "var(--radius-md)",
                       fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
                       backgroundColor: theme === t.id ? "var(--accent-muted)" : "var(--bg-hover)",
                       color: theme === t.id ? "var(--accent)" : "var(--text-primary)",
-                      transition: "all var(--duration-fast) var(--ease-default)",
                     }}
                     onClick={() => setTheme(t.id)}
                   >
@@ -119,10 +95,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           )}
           {activeTab === "shortcuts" && (
             <div>
-              <h2 style={{ fontSize: "var(--text-base)", fontWeight: "var(--font-medium)", color: "var(--text-primary)", marginBottom: 24 }}>
+              <h2 style={{ fontSize: "var(--text-base)", fontWeight: "var(--font-medium)", color: "var(--text-primary)", marginBottom: "var(--space-5)" }}>
                 快捷键
               </h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
                 {[
                   { key: "Ctrl+K", action: "命令面板" },
                   { key: "Ctrl+P", action: "快速打开文件" },
@@ -138,21 +114,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     key={item.key}
                     style={{
                       display: "flex", alignItems: "center", justifyContent: "space-between",
-                      padding: "0 12px", height: 32, borderRadius: "var(--radius-sm)",
+                      padding: "0 var(--space-3)", height: 32, borderRadius: "var(--radius-sm)",
                       backgroundColor: "var(--bg-hover)",
                     }}
                   >
                     <span style={{ fontSize: "var(--text-xs)", color: "var(--text-primary)" }}>{item.action}</span>
-                    <kbd
-                      style={{
-                        padding: "2px 6px", borderRadius: "var(--radius-sm)",
-                        fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
-                        backgroundColor: "var(--bg-active)",
-                        color: "var(--text-secondary)",
-                      }}
-                    >
-                      {item.key}
-                    </kbd>
+                    <kbd>{item.key}</kbd>
                   </div>
                 ))}
               </div>

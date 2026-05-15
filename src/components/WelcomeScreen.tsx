@@ -17,31 +17,20 @@ export function WelcomeScreen() {
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-app)" }}>
-      <div style={{ textAlign: "center", marginBottom: 48 }}>
+      <div style={{ textAlign: "center", marginBottom: "var(--space-7)" }}>
         <h1 style={{ fontSize: "var(--text-xl)", fontWeight: "var(--font-medium)", color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
           Ink<span style={{ color: "var(--accent)" }}>Down</span>
         </h1>
-        <p style={{ fontSize: "var(--text-sm)", color: "var(--text-tertiary)", marginTop: 8 }}>
+        <p style={{ fontSize: "var(--text-sm)", color: "var(--text-tertiary)", marginTop: "var(--space-2)" }}>
           本地优先的知识管理
         </p>
       </div>
 
-      <button
-        onClick={handleOpenVault}
-        style={{
-          padding: "8px 24px", height: 34,
-          fontSize: "var(--text-sm)", fontWeight: "var(--font-medium)",
-          borderRadius: "var(--radius-md)",
-          backgroundColor: "var(--accent)", color: "#ffffff",
-          transition: "background-color var(--duration-fast) var(--ease-default)",
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--accent-hover)"}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "var(--accent)"}
-      >
+      <button className="btn-primary" onClick={handleOpenVault}>
         打开 Vault
       </button>
 
-      <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)", marginTop: 32 }}>
+      <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)", marginTop: "var(--space-6)" }}>
         Ctrl+O 打开文件夹
       </p>
     </div>

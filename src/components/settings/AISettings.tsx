@@ -113,7 +113,7 @@ export function AISettings() {
           style={{
             padding: "0 16px", height: 32, borderRadius: "var(--radius-sm)",
             fontSize: "var(--text-xs)", fontWeight: "var(--font-medium)",
-            backgroundColor: "var(--accent)", color: "#ffffff",
+            backgroundColor: "var(--accent)", color: "var(--text-on-accent)",
             transition: "opacity var(--duration-fast) var(--ease-default)",
           }}
         >

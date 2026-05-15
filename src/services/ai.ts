@@ -77,13 +77,33 @@ function createClient(config: AIConfig): OpenAI {
   });
 }
 
+// 测试连接
+export async function testConnection(config: AIConfig): Promise<{ ok: boolean; message: string; latency?: number }> {
+  const start = Date.now();
+  try {
+    const client = createClient(config);
+    const response = await client.chat.completions.create({
+      model: config.model,
+      messages: [{ role: "user", content: "hi" }],
+      max_tokens: 5,
+    });
+    if (response.choices && response.choices.length > 0) {
+      return { ok: true, message: "连接成功", latency: Date.now() - start };
+    }
+    return { ok: false, message: "返回数据异常" };
+  } catch (err: any) {
+    const status = err?.status || err?.response?.status || "未知";
+    const detail = err?.message || String(err);
+    return { ok: false, message: `HTTP ${status} — ${detail}` };
+  }
+}
+
 // 非流式聊天
 export async function chatCompletion(
   config: AIConfig,
   messages: AIMessage[]
 ): Promise<string> {
   const client = createClient(config);
-
   const response = await client.chat.completions.create({
     model: config.model,
     messages,

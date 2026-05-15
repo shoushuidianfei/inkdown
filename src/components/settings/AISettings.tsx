@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAIStore } from "../../stores/useAIStore";
-import { AIConfig, AI_PROVIDERS } from "../../services/ai";
+import { AIConfig, AI_PROVIDERS, testConnection } from "../../services/ai";
 
 export function AISettings() {
   const { config, loadConfig, saveConfig, clearConfig } = useAIStore();
@@ -12,6 +12,8 @@ export function AISettings() {
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(4096);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string; latency?: number } | null>(null);
+  const [isTesting, setIsTesting] = useState(false);
   const [saved, setSaved] = useState(false);
   const configLoadedRef = useRef(false);
 
@@ -53,6 +55,20 @@ export function AISettings() {
       handleProviderChange("deepseek");
       setTemperature(0.7);
       setMaxTokens(4096);
+    }
+  };
+
+  const handleTest = async () => {
+    const newConfig: AIConfig = { provider, apiKey, baseUrl, model, temperature, maxTokens };
+    setIsTesting(true);
+    setTestResult(null);
+    try {
+      const result = await testConnection(newConfig);
+      setTestResult(result);
+    } catch (err: any) {
+      setTestResult({ ok: false, message: String(err.message || err) });
+    } finally {
+      setIsTesting(false);
     }
   };
 
@@ -130,7 +146,7 @@ export function AISettings() {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 8, paddingTop: 8 }}>
+      <div style={{ display: "flex", gap: 8, paddingTop: 8, alignItems: "center" }}>
         <button
           onClick={handleSave}
           style={{
@@ -142,6 +158,22 @@ export function AISettings() {
         >
           {saved ? "已保存" : "保存"}
         </button>
+        <button
+          onClick={handleTest}
+          disabled={!apiKey || isTesting}
+          style={{
+            padding: "0 16px", height: 32, borderRadius: "var(--radius-sm)",
+            fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+            backgroundColor: "var(--bg-hover)", color: "var(--text-primary)",
+          }}
+        >
+          {isTesting ? "测试中..." : "测试连接"}
+        </button>
+        {testResult && (
+          <span style={{ fontSize: "var(--text-xs)", color: testResult.ok ? "var(--success)" : "var(--danger)", marginLeft: 4 }}>
+            {testResult.ok ? `✅ ${testResult.latency}ms` : `❌ ${testResult.message.slice(0, 60)}`}
+          </span>
+        )}
         <button
           onClick={handleClear}
           style={{

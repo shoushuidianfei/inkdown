@@ -9,6 +9,7 @@ import {
   processText,
   saveAIConfig,
   loadAIConfig,
+  testConnection,
 } from "../services/ai";
 
 export interface ChatMessage {
@@ -32,6 +33,9 @@ interface AIState {
   loadConfig: () => void;
   saveConfig: (config: AIConfig) => void;
   clearConfig: () => void;
+
+  // 测试连接
+  testConnection: () => Promise<{ ok: boolean; message: string; latency?: number }>;
 
   // 聊天
   sendMessage: (content: string, noteContext?: string) => Promise<void>;
@@ -68,6 +72,13 @@ export const useAIStore = create<AIState>((set, get) => ({
   clearConfig: () => {
     localStorage.removeItem("inkdown_ai_config");
     set({ config: null });
+  },
+
+  // 测试连接
+  testConnection: async () => {
+    const { config } = get();
+    if (!config) return { ok: false, message: "未配置 AI" };
+    return testConnection(config);
   },
 
   // 发送消息

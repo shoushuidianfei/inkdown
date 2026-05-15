@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAIStore } from "../../stores/useAIStore";
 import { AIConfig, AI_PROVIDERS } from "../../services/ai";
 
@@ -10,14 +10,16 @@ export function AISettings() {
   const [baseUrl, setBaseUrl] = useState("");
   const [model, setModel] = useState("");
   const [temperature, setTemperature] = useState(0.7);
-  const [maxTokens, setMaxTokens] = useState(2000);
+  const [maxTokens, setMaxTokens] = useState(4096);
   const [showApiKey, setShowApiKey] = useState(false);
   const [saved, setSaved] = useState(false);
+  const configLoadedRef = useRef(false);
 
   useEffect(() => { loadConfig(); }, [loadConfig]);
 
   useEffect(() => {
     if (config) {
+      configLoadedRef.current = true;
       setProvider(config.provider);
       setApiKey(config.apiKey);
       setBaseUrl(config.baseUrl);
@@ -27,13 +29,15 @@ export function AISettings() {
     }
   }, [config]);
 
-  useEffect(() => {
-    const providerConfig = AI_PROVIDERS.find((p) => p.id === provider);
+  // 仅在用户手动切换提供商时填充默认值，不覆盖已加载的配置
+  const handleProviderChange = (newProvider: string) => {
+    setProvider(newProvider);
+    const providerConfig = AI_PROVIDERS.find((p) => p.id === newProvider);
     if (providerConfig) {
       setBaseUrl(providerConfig.baseUrl);
-      if (!model || !providerConfig.models.includes(model)) setModel(providerConfig.models[0]);
+      setModel(providerConfig.models[0]);
     }
-  }, [provider]);
+  };
 
   const handleSave = () => {
     const newConfig: AIConfig = { provider, apiKey, baseUrl, model, temperature, maxTokens };
@@ -45,8 +49,10 @@ export function AISettings() {
   const handleClear = () => {
     if (confirm("确定要清除 AI 配置吗？")) {
       clearConfig();
-      setApiKey(""); setProvider("deepseek"); setModel("deepseek-chat");
-      setTemperature(0.7); setMaxTokens(2000);
+      setApiKey("");
+      handleProviderChange("deepseek");
+      setTemperature(0.7);
+      setMaxTokens(4096);
     }
   };
 
@@ -67,7 +73,7 @@ export function AISettings() {
 
       <div>
         <label style={labelStyle}>提供商</label>
-        <select value={provider} onChange={(e) => setProvider(e.target.value)} style={selectStyle}>
+        <select value={provider} onChange={(e) => handleProviderChange(e.target.value)} style={selectStyle}>
           {AI_PROVIDERS.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
       </div>
@@ -87,24 +93,41 @@ export function AISettings() {
 
       <div>
         <label style={labelStyle}>模型</label>
-        <select value={model} onChange={(e) => setModel(e.target.value)} style={selectStyle}>
-          {currentProvider?.models.map((m) => <option key={m} value={m}>{m}</option>)}
-        </select>
+        <input
+          type="text"
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          placeholder="输入模型名称"
+          list="model-suggestions"
+          style={inputStyle}
+        />
+        <datalist id="model-suggestions">
+          {currentProvider?.models.map((m) => <option key={m} value={m} />)}
+        </datalist>
       </div>
 
       <div>
         <label style={labelStyle}>Base URL</label>
         <input type="text" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} style={inputStyle} />
+        <p style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: "var(--space-1)" }}>
+          API 接口地址，切换提供商自动填充，可自行修改
+        </p>
       </div>
 
       <div>
         <label style={labelStyle}>温度: {temperature}</label>
         <input type="range" min="0" max="2" step="0.1" value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} style={{ width: "100%" }} />
+        <p style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: "var(--space-1)" }}>
+          控制输出的随机性。0 = 最确定、最严谨；1 = 平衡；2 = 最随机、最有创意。写作推荐 0.7，代码推荐 0.3
+        </p>
       </div>
 
       <div>
-        <label style={labelStyle}>最大 Token: {maxTokens}</label>
-        <input type="range" min="100" max="8000" step="100" value={maxTokens} onChange={(e) => setMaxTokens(parseInt(e.target.value))} style={{ width: "100%" }} />
+        <label style={labelStyle}>最大输出长度: {maxTokens >= 1024 ? `${(maxTokens / 1024).toFixed(0)}K` : maxTokens}</label>
+        <input type="range" min="256" max="65536" step="256" value={maxTokens} onChange={(e) => setMaxTokens(parseInt(e.target.value))} style={{ width: "100%" }} />
+        <p style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: "var(--space-1)" }}>
+          单次回复的最大长度，不是上下文窗口。上下文大小由模型决定（如 128K、1M），无需在此设置
+        </p>
       </div>
 
       <div style={{ display: "flex", gap: 8, paddingTop: 8 }}>

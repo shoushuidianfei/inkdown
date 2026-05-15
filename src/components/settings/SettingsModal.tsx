@@ -108,6 +108,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   { key: "Ctrl+W", action: "关闭当前标签" },
                   { key: "Ctrl+G", action: "切换图谱视图" },
                   { key: "Ctrl+Shift+E", action: "切换阅读模式" },
+                  { key: "Ctrl+\\", action: "切换左侧面板" },
+                  { key: "Ctrl+Shift+R", action: "切换右侧面板" },
                   { key: "Ctrl+,", action: "打开设置" },
                 ].map((item) => (
                   <div

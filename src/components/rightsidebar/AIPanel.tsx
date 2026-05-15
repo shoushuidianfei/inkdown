@@ -134,9 +134,9 @@ export function AIPanel() {
             onKeyDown={handleKeyDown}
             placeholder="输入问题..."
             style={{
-              flex: 1, padding: "var(--space-2) var(--space-3)", fontSize: "var(--text-xs)", fontWeight: "var(--font-normal)",
+              flex: 1, padding: "var(--space-2) var(--space-3)", fontSize: "var(--text-sm)", fontWeight: "var(--font-normal)",
               resize: "none", minHeight: 40, maxHeight: 80,
-              backgroundColor: "var(--gray-800)", color: "var(--text-primary)",
+              backgroundColor: "var(--bg-main)", color: "var(--text-primary)",
               border: "var(--border-subtle)", borderRadius: "var(--radius-lg)",
             }}
             rows={1}

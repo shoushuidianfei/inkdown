@@ -7,7 +7,7 @@ export function TabBar() {
   if (openTabs.length === 0) return null;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", overflow: "x-auto", height: 40 }}>
+    <div style={{ display: "flex", alignItems: "center", overflowX: "auto", overflowY: "hidden", height: 40, minWidth: 0 }}>
       {openTabs.map((tab) => (
         <TabItem key={tab.id} tab={tab} isActive={tab.id === activeTabId} onClick={() => setActiveTab(tab.id)} onClose={() => closeTab(tab.id)} />
       ))}

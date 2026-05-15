@@ -14,7 +14,7 @@ import { GraphView } from "./components/GraphView";
 import { StatusBar } from "./components/StatusBar";
 import { SettingsModal } from "./components/settings/SettingsModal";
 import { CommandPalette } from "./components/CommandPalette";
-import { Network, FileText, BookOpen, Settings } from "lucide-react";
+import { Network, FileText, BookOpen, Settings, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
 
 type ViewMode = "editor" | "reading" | "graph";
 
@@ -76,6 +76,8 @@ function App() {
       if (e.ctrlKey && e.key === ",") { e.preventDefault(); setShowSettings(true); return; }
       if (e.ctrlKey && e.key === "w") { e.preventDefault(); if (activeTabId) closeTab(activeTabId); return; }
       if (e.ctrlKey && e.key === "s") { e.preventDefault(); if (activeTabId) useAppStore.getState().saveFile(activeTabId); return; }
+      if (e.ctrlKey && e.key === "\\") { e.preventDefault(); setLeftSidebarCollapsed((prev) => !prev); return; }
+      if (e.ctrlKey && e.shiftKey && e.key === "R") { e.preventDefault(); setRightSidebarCollapsed((prev) => !prev); return; }
       if (e.key === "Escape") setShowCommandPalette(false);
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -121,7 +123,7 @@ function App() {
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {/* 左侧边栏 */}
         {!leftSidebarCollapsed && (
-          <div style={{ width: leftSidebarWidth, flexShrink: 0, position: "relative", backgroundColor: "var(--bg-sidebar)" }}>
+          <div style={{ width: leftSidebarWidth, flexShrink: 0, position: "relative", backgroundColor: "var(--bg-sidebar)", borderRight: "var(--border-subtle)" }}>
             <Sidebar />
             <div
               style={{ position: "absolute", top: 0, right: 0, width: 4, height: "100%", cursor: "col-resize" }}
@@ -129,37 +131,38 @@ function App() {
             />
           </div>
         )}
-        <button
-          className="hover-bg"
-          style={{ width: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gray-500)", backgroundColor: "var(--bg-app)" }}
-          onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
-        >
-          <span style={{ fontSize: 10 }}>{leftSidebarCollapsed ? "»" : "«"}</span>
-        </button>
 
         {/* 主编辑区 */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           {/* TabBar: 40px */}
           <div style={{ height: 40, display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: "var(--space-3)", paddingRight: "var(--space-3)", backgroundColor: "var(--bg-sidebar)", borderBottom: "var(--border-subtle)" }}>
-            <div style={{ flex: 1, overflow: "hidden" }}><TabBar /></div>
-            <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: "var(--space-2)" }}>
+            <div style={{ display: "flex", alignItems: "center", flex: 1, overflow: "hidden" }}>
+              <button className="icon-btn" style={{ width: 28, height: 28, marginRight: "var(--space-1)", flexShrink: 0 }} onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)} title={leftSidebarCollapsed ? "显示侧边栏 (Ctrl+\\)" : "隐藏侧边栏 (Ctrl+\\)"}>
+                {leftSidebarCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+              </button>
+              <div style={{ flex: 1, overflow: "hidden", minWidth: 0 }}><TabBar /></div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: "var(--space-2)", flexShrink: 0 }}>
               <button className={`icon-btn${viewMode === "editor" ? " active" : ""}`} style={{ width: 28, height: 28 }} onClick={() => setViewMode("editor")} title="编辑器"><FileText size={16} /></button>
               <button className={`icon-btn${viewMode === "reading" ? " active" : ""}`} style={{ width: 28, height: 28 }} onClick={() => setViewMode("reading")} title="阅读模式"><BookOpen size={16} /></button>
               <button className={`icon-btn${viewMode === "graph" ? " active" : ""}`} style={{ width: 28, height: 28 }} onClick={() => setViewMode("graph")} title="图谱视图"><Network size={16} /></button>
               <div style={{ width: 1, height: 16, margin: "0 var(--space-1)", backgroundColor: "var(--border-primary)" }} />
               <button className="icon-btn" style={{ width: 28, height: 28 }} onClick={() => setShowSettings(true)} title="设置"><Settings size={16} /></button>
+              <button className="icon-btn" style={{ width: 28, height: 28 }} onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)} title={rightSidebarCollapsed ? "显示右侧面板 (Ctrl+Shift+R)" : "隐藏右侧面板 (Ctrl+Shift+R)"}>
+                {rightSidebarCollapsed ? <PanelRightOpen size={16} /> : <PanelRightClose size={16} />}
+              </button>
             </div>
           </div>
 
           {/* 内容区 */}
           <div style={{ flex: 1, overflow: "hidden", backgroundColor: "var(--bg-main)" }}>
-            {viewMode === "graph" ? <GraphView />
+            {viewMode === "graph" ? <GraphView onBack={() => setViewMode("editor")} />
               : viewMode === "reading" && activeTab ? <ReadingView content={activeTab.content} />
               : activeTab ? <MarkdownEditor key={activeTab.id} tab={activeTab} />
               : (
                 <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <div style={{ textAlign: "center" }}>
-                    <p style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", marginBottom: 4 }}>选择一个文件开始编辑</p>
+                    <p style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)", marginBottom: "var(--space-1)" }}>选择一个文件开始编辑</p>
                     <p style={{ fontSize: "var(--text-xs)", color: "var(--text-tertiary)" }}>Ctrl+K 打开命令面板</p>
                   </div>
                 </div>
@@ -167,17 +170,9 @@ function App() {
           </div>
         </div>
 
-        {/* 右侧边栏折叠按钮 */}
-        <button
-          className="hover-bg"
-          style={{ width: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gray-500)", backgroundColor: "var(--bg-app)" }}
-          onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
-        >
-          <span style={{ fontSize: 10 }}>{rightSidebarCollapsed ? "«" : "»"}</span>
-        </button>
         {/* 右侧边栏 */}
         {!rightSidebarCollapsed && (
-          <div style={{ width: rightSidebarWidth, flexShrink: 0, position: "relative", backgroundColor: "var(--bg-sidebar)" }}>
+          <div style={{ width: rightSidebarWidth, flexShrink: 0, position: "relative", backgroundColor: "var(--bg-sidebar)", borderLeft: "var(--border-subtle)" }}>
             <div
               style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", cursor: "col-resize" }}
               onMouseDown={startResize("right")}

@@ -93,16 +93,17 @@ export function MarkdownEditor({ tab }: MarkdownEditorProps) {
           }
         }),
 
-        // 编辑器样式 — 使用新 Design Token
         CMEditorView.theme({
           "&": {
             height: "100%",
-            fontSize: "14px",
+            fontSize: "var(--text-base)",
           },
           ".cm-content": {
             fontFamily: 'system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif',
-            padding: "16px",
-            lineHeight: "1.8",
+            padding: "var(--space-4) 80px",
+            lineHeight: "var(--leading-relaxed)",
+            maxWidth: "800px",
+            margin: "0 auto",
           },
           ".cm-line": {
             padding: "0",
